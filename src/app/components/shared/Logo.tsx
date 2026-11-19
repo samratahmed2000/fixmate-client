@@ -18,7 +18,7 @@ const Logo = ({ className }: LogoProps) => {
         >
           <Wrench className="size-4" />
         </span>
-        <span className="text-xl">FixMate</span>
+        <span className="text-xl font-extrabold">FixMate</span>
       </span>
     </span>
   );
