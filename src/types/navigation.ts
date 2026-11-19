@@ -1,3 +1,7 @@
+export type LogoProps = {
+  className?: string;
+};
+
 export type NavLink = {
   label: string;
   href: string;

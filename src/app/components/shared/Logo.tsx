@@ -1,9 +1,6 @@
 import { Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-type LogoProps = {
-  className?: string;
-};
+import { LogoProps } from "@/types/navigation";
 
 const Logo = ({ className }: LogoProps) => {
   return (
