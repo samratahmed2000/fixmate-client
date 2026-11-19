@@ -1,4 +1,4 @@
-import type { NavLink } from "@/types/type";
+import type { NavLink } from "@/types/navigation";
 import { cn } from "@/lib/utils";
 
 export const getNavLinks = (): NavLink[] => {

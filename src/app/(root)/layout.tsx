@@ -1,10 +1,14 @@
+import Footer from "@/app/components/shared/Footer";
 import Navbar from "@/app/components/shared/Navbar";
 
 const RootLayout = ({ children }: LayoutProps<"/">) => {
   return (
     <>
-      <Navbar />
-      <div className="flex-1">{children}</div>
+      <main className="flex-1">
+        <Navbar />
+        {children}
+        <Footer />
+      </main>
     </>
   );
 };

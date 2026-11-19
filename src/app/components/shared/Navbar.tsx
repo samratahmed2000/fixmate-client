@@ -15,7 +15,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { getNavLinks, isActivePath, navLinkClass } from "@/lib/nav-links";
+import { getNavLinks, isActivePath, navLinkClass } from "@/lib/navigation/nav-links";
 
 const Navbar = () => {
   const pathname = usePathname();
