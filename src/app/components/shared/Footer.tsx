@@ -1,23 +1,20 @@
 import Link from "next/link";
-import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import Logo from "@/app/components/shared/Logo";
 import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getNavLinks } from "@/lib/navigation/nav-links";
 import { socialLinks } from "@/lib/navigation/social-links";
+import { Category } from "@/types/category";
+import getCategories from "@/lib/api/getCategories";
 
-const categories = [
-  { label: "Smartphone", href: "/services?category=smartphone" },
-  { label: "Laptop & PC", href: "/services?category=laptop-pc" },
-  { label: "AC", href: "/services?category=ac" },
-  { label: "Refrigerator", href: "/services?category=refrigerator" },
-  { label: "TV", href: "/services?category=tv" },
-  { label: "Washing Machine", href: "/services?category=washing-machine" },
-  { label: "Electrical", href: "/services?category=electrical" },
-];
-
-const Footer = () => {
+const Footer = async () => {
   const quickLinks = getNavLinks();
+
+  const categoriesData = await getCategories();
+  const categories: Category[] = Array.isArray(categoriesData)
+    ? categoriesData
+    : (categoriesData?.data ?? []);
 
   return (
     <footer className="border-t bg-muted/30">
@@ -87,12 +84,12 @@ const Footer = () => {
               </h2>
               <ul className="mt-4 space-y-3">
                 {categories.map((category) => (
-                  <li key={category.label}>
+                  <li key={category._id}>
                     <Link
-                      href={category.href}
+                      href={`/services?category=${category.slug}`}
                       className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
-                      {category.label}
+                      {category.title}
                     </Link>
                   </li>
                 ))}
