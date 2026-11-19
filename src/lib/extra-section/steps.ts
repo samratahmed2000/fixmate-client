@@ -20,7 +20,7 @@ export const steps = [
     icon: Wrench,
   },
   {
-    title: "Pay after Completion",
+    title: "Payment after Job",
     description: "Pay securely only after you are happy with the result.",
     icon: CreditCard,
   },
