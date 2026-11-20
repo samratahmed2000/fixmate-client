@@ -59,7 +59,9 @@ const Navbar = () => {
         </nav>
 
         <div className="flex items-center gap-2">
-          <AuthActions />
+          <div className="hidden md:flex">
+            <AuthActions />
+          </div>
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger

@@ -136,7 +136,9 @@ const UserMenu = ({ user, compact = false, onNavigate }: UserMenuProps) => {
           <DropdownMenuSeparator />
 
           <DropdownMenuItem
-            render={<Link href="/dashboard" onClick={onNavigate} />}
+            render={
+              <Link href={`/dashboard/${user?.role}`} onClick={onNavigate} />
+            }
             className="cursor-pointer gap-2 px-2 py-2"
           >
             <LayoutDashboard aria-hidden="true" />
@@ -144,7 +146,7 @@ const UserMenu = ({ user, compact = false, onNavigate }: UserMenuProps) => {
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            render={<Link href="/profile" onClick={onNavigate} />}
+            render={<Link href={`/dashboard/profile`} onClick={onNavigate} />}
             className="cursor-pointer gap-2 px-2 py-2"
           >
             <UserPen aria-hidden="true" />

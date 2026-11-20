@@ -33,8 +33,8 @@ Next.js 16.4.6 App Router + React 19.3 client for a device/appliance repair plat
 
 - `src/lib/auth.ts` — server-only better-auth config: MongoDB adapter (`fixMate` db), email/password, Google, and additional user fields `role` (`customer | technician | admin`, default `customer`), `phone`, `area`, `bio`.
 - `src/lib/auth-client.ts` — client entrypoint exporting `signIn`, `signUp`, `signOut`, `useSession`. Import this (never `@/lib/auth`) from client components; `auth.ts` constructs a `MongoClient` at module load.
-- `src/app/api/auth/[...all]/route.ts` (better-auth `toNextJsHandler`) must stay for the client to work.
-- Env (`.env*`, gitignored): `MONGODB_URI`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`. `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` are read but not set, so Google sign-in is non-functional and the build warns "Social provider google is missing clientId or clientSecret"; that warning is expected.
+- `src/app/api/auth/[...all]/route.ts` (better-auth `toNextJsHandler`) must stay for the client to work. It calls `mongoClient.connect()` before every request on purpose: the MongoDB driver permanently closes its topology after a failed initial connect (e.g. the DB was briefly unreachable while `next dev` started), which otherwise makes every auth request 500 with `MongoTopologyClosedError` until the server restarts.
+- Env (`.env*`, gitignored): `MONGODB_URI`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`. Google OAuth needs `http://localhost:3000/api/auth/callback/google` registered as an authorized redirect URI in the Google console. If the Google vars are missing, the build warns "Social provider google is missing clientId or clientSecret" and Google sign-in fails.
 - `/sign-in` and `/sign-up` live in the `(auth)` route group, which has no layout — each page renders its own full-screen shell, and they do not get the `(root)` Navbar/Footer.
 
 ## Structure and conventions

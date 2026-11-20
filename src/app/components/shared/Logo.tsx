@@ -2,7 +2,7 @@ import { Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoProps } from "@/types/navigation";
 
-const Logo = ({ className }: LogoProps) => {
+const Logo = ({ className, iconOnly = false }: LogoProps) => {
   return (
     <span
       data-slot="logo"
@@ -18,7 +18,7 @@ const Logo = ({ className }: LogoProps) => {
         >
           <Wrench className="size-4" />
         </span>
-        <span className="text-xl font-extrabold">FixMate</span>
+        {!iconOnly && <span className="text-xl font-extrabold">FixMate</span>}
       </span>
     </span>
   );

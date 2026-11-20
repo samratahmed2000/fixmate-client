@@ -1,5 +1,9 @@
+import { LucideIcon } from "lucide-react";
+
 export type LogoProps = {
   className?: string;
+  /** Hide the "FixMate" wordmark and keep only the wrench mark. */
+  iconOnly?: boolean;
 };
 
 export interface NavLink {
@@ -12,6 +16,13 @@ export interface NavUser {
   email?: string | null;
   image?: string | null;
   role?: string | null;
+}
+
+export interface NavItem {
+  id: string;
+  name?: string;
+  url?: string;
+  icon?: LucideIcon;
 }
 
 export interface SocialLink {
