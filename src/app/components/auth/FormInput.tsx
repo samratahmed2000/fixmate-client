@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { handleInputChange } from "@/helper/auth/handleInputChange";
-import { handleRoleSelect } from "@/helper/auth/handleRoleSelect";
 import { handleSubmit } from "@/helper/auth/handleSubmit";
 import type { AuthFormData, AuthFormProps } from "@/types/auth";
 import {
@@ -16,8 +15,9 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import PasswordStrengthBar from "./PasswordStrengthBar";
 
-const FormInput = ({ type, onSubmit }: AuthFormProps) => {
+const FormInput = ({ type }: AuthFormProps) => {
   const router = useRouter();
   const isSignUp = type === "sign-up";
   const [showPassword, setShowPassword] = React.useState(false);
@@ -35,7 +35,7 @@ const FormInput = ({ type, onSubmit }: AuthFormProps) => {
   return (
     <form
       onSubmit={(e) =>
-        handleSubmit(e, type, setErrors, router, onSubmit, setIsLoading)
+        handleSubmit(e, type, formData, setErrors, router, setIsLoading)
       }
       noValidate
       className="space-y-4"
@@ -54,7 +54,9 @@ const FormInput = ({ type, onSubmit }: AuthFormProps) => {
             {/* Customer Role Card */}
             <button
               type="button"
-              onClick={() => handleRoleSelect("customer", setFormData)}
+              onClick={() =>
+                setFormData((prev) => ({ ...prev, role: "customer" }))
+              }
               className={cn(
                 "w-fit flex flex-col items-center justify-center gap-2 rounded-xl border p-3 text-center transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 formData.role === "customer"
@@ -80,7 +82,9 @@ const FormInput = ({ type, onSubmit }: AuthFormProps) => {
             {/* Technician Role Card */}
             <button
               type="button"
-              onClick={() => handleRoleSelect("technician", setFormData)}
+              onClick={() =>
+                setFormData((prev) => ({ ...prev, role: "technician" }))
+              }
               className={cn(
                 "w-fit flex flex-col items-center justify-center gap-2 rounded-xl border p-3 text-center transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 formData.role === "technician"
@@ -103,9 +107,6 @@ const FormInput = ({ type, onSubmit }: AuthFormProps) => {
               </div>
             </button>
           </div>
-
-          {/* Hidden input to ensure FormData entries captures the role */}
-          <input type="hidden" name="role" value={formData.role} />
         </Field>
       )}
 
@@ -121,6 +122,7 @@ const FormInput = ({ type, onSubmit }: AuthFormProps) => {
               autoComplete="name"
               placeholder="e.g. Samrat Ahmed"
               value={formData.name}
+              maxLength={isSignUp ? 32 : undefined}
               onChange={(e) => handleInputChange(e, setFormData, setErrors)}
               aria-invalid={!!errors.name}
               className="h-10"
@@ -139,6 +141,7 @@ const FormInput = ({ type, onSubmit }: AuthFormProps) => {
             autoComplete="email"
             placeholder="me@mail.com"
             value={formData.email}
+            maxLength={isSignUp ? 32 : undefined}
             onChange={(e) => handleInputChange(e, setFormData, setErrors)}
             aria-invalid={!!errors.email}
             className="h-10"
@@ -156,6 +159,7 @@ const FormInput = ({ type, onSubmit }: AuthFormProps) => {
               type={showPassword ? "text" : "password"}
               autoComplete={isSignUp ? "new-password" : "current-password"}
               placeholder="••••••••"
+              maxLength={isSignUp ? 32 : undefined}
               value={formData.password}
               onChange={(e) => handleInputChange(e, setFormData, setErrors)}
               aria-invalid={!!errors.password}
@@ -175,6 +179,10 @@ const FormInput = ({ type, onSubmit }: AuthFormProps) => {
             </button>
           </div>
 
+          {/* Live password strength bar — sign-up only */}
+          {isSignUp && <PasswordStrengthBar password={formData.password} />}
+
+          {/* Error only shows when form is submitted with unmet criteria */}
           {errors.password && <FieldError>{errors.password}</FieldError>}
         </Field>
       </FieldGroup>
@@ -186,11 +194,7 @@ const FormInput = ({ type, onSubmit }: AuthFormProps) => {
         disabled={isLoading}
         className="w-full h-10 mt-2 font-semibold cursor-pointer"
       >
-        {isLoading
-          ? "Please wait..."
-          : isSignUp
-            ? "Create Account"
-            : "Sign In"}
+        {isLoading ? "Please wait..." : isSignUp ? "Create Account" : "Sign In"}
       </Button>
     </form>
   );

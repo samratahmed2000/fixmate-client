@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import Logo from "@/app/components/shared/Logo";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
@@ -15,7 +15,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { getNavLinks, isActivePath, navLinkClass } from "@/lib/navigation/nav-links";
+import {
+  getNavLinks,
+  isActivePath,
+  navLinkClass,
+} from "@/lib/navigation/nav-links";
+import AuthActions from "./AuthActions";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -54,17 +59,7 @@ const Navbar = () => {
         </nav>
 
         <div className="flex items-center gap-2">
-          <div className="hidden items-center gap-2 md:flex">
-            <Link
-              href="/sign-in"
-              className={buttonVariants({ variant: "ghost", size: "lg" })}
-            >
-              Sign In
-            </Link>
-            <Link href="/sign-up" className={buttonVariants({ size: "lg" })}>
-              Sign Up
-            </Link>
-          </div>
+          <AuthActions />
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger
@@ -113,20 +108,10 @@ const Navbar = () => {
               </nav>
 
               <SheetFooter className="border-t p-3">
-                <Link
-                  href="/sign-in"
-                  onClick={() => setOpen(false)}
-                  className={buttonVariants({ variant: "outline", size: "lg" })}
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/sign-up"
-                  onClick={() => setOpen(false)}
-                  className={buttonVariants({ size: "lg" })}
-                >
-                  Sign Up
-                </Link>
+                <AuthActions
+                  variant="sheet"
+                  onNavigate={() => setOpen(false)}
+                />
               </SheetFooter>
             </SheetContent>
           </Sheet>

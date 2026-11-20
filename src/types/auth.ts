@@ -9,7 +9,6 @@ export interface AuthFormData {
 
 export interface AuthFormProps {
   type: "sign-up" | "sign-in";
-  onSubmit?: (data: Record<string, FormDataEntryValue>) => void;
   className?: string;
 }
 

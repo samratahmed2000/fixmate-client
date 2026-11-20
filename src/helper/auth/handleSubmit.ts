@@ -1,53 +1,50 @@
 import { signIn, signUp } from "@/lib/auth-client";
 import { toast } from "@/components/ui/toast";
 import type * as React from "react";
+import type { AuthFormData } from "@/types/auth";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export const handleSubmit = async (
   e: React.FormEvent<HTMLFormElement>,
   type: "sign-up" | "sign-in",
+  formData: AuthFormData,
   setErrors: React.Dispatch<React.SetStateAction<Record<string, string>>>,
   router?: AppRouterInstance,
-  onSubmit?: (data: Record<string, FormDataEntryValue>) => void,
   setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>,
 ) => {
   e.preventDefault();
-
-  const formData = new FormData(e.currentTarget);
-  const user = Object.fromEntries(formData.entries());
 
   const isSignUp = type === "sign-up";
   const validationErrors: Record<string, string> = {};
 
   if (isSignUp) {
-    const nameVal = String(user.name ?? "").trim();
+    const nameVal = formData.name.trim();
     if (!nameVal) {
       validationErrors.name = "Full name is required.";
     }
   }
 
-  const emailVal = String(user.email ?? "").trim();
+  const emailVal = formData.email.trim();
   if (!emailVal) {
     validationErrors.email = "Email address is required.";
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
     validationErrors.email = "Please enter a valid email address.";
   }
 
-  const passwordVal = String(user.password ?? "");
+  const passwordVal = formData.password;
   if (!passwordVal) {
     validationErrors.password = "Password is required.";
   } else if (isSignUp) {
-    const missingCriteria: string[] = [];
-    if (passwordVal.length < 6) missingCriteria.push("at least 6 characters");
-    if (!/[A-Z]/.test(passwordVal)) missingCriteria.push("1 uppercase letter");
-    if (!/[a-z]/.test(passwordVal)) missingCriteria.push("1 lowercase letter");
-    if (!/[0-9]/.test(passwordVal)) missingCriteria.push("1 number");
-    if (!/[^A-Za-z0-9]/.test(passwordVal)) {
-      missingCriteria.push("1 special character");
-    }
+    const allMet =
+      passwordVal.length >= 6 &&
+      /[A-Z]/.test(passwordVal) &&
+      /[a-z]/.test(passwordVal) &&
+      /[0-9]/.test(passwordVal) &&
+      /[^A-Za-z0-9]/.test(passwordVal);
 
-    if (missingCriteria.length > 0) {
-      validationErrors.password = `Password must include: ${missingCriteria.join(", ")}.`;
+    if (!allMet) {
+      validationErrors.password =
+        "Password does not meet all requirements below.";
     }
   }
 
@@ -62,19 +59,15 @@ export const handleSubmit = async (
     return;
   }
 
-  if (onSubmit) {
-    onSubmit(user);
-  }
-
   try {
     setIsLoading?.(true);
 
     if (isSignUp) {
       const res = await signUp.email({
-        name: String(user.name),
+        name: formData.name.trim(),
         email: emailVal,
         password: passwordVal,
-        role: (user.role as "customer" | "technician") || "customer",
+        role: formData.role || "customer",
       });
 
       if (res.error) {
@@ -90,8 +83,7 @@ export const handleSubmit = async (
 
       toast.add({
         title: "Account Created Successfully!",
-        description:
-          "Welcome to FixMate! Please sign in with your credentials.",
+        description: "Welcome to FixMate! Please sign in with your credentials.",
         type: "success",
       });
 
