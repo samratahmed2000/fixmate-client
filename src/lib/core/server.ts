@@ -15,10 +15,10 @@ export const requireCustomerAccess = async () => {
   const role = session?.user.role;
 
   if (role === "technician") {
-    redirect("/dashboard/technician/my-services");
+    redirect("/dashboard/technician");
   }
 
   if (role === "admin") {
-    redirect("/dashboard/admin/services");
+    redirect("/dashboard/admin");
   }
 };
