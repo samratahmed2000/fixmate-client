@@ -1,15 +1,25 @@
+"use client";
+
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
+import type { Category } from "@/types/category";
 import type { Service } from "@/types/services";
 import ApprovalStatusBadge from "./ApprovalStatusBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
 import ServiceImage from "./ServiceImage";
 import ActionsButton from "./ActionsButton";
 
-const ServiceTableRow = ({ service }: { service: Service }) => {
-  const isAvailable =
-    service.availability === "Active" ||
-    (service.availability === undefined && service.isActive !== false);
+const ServiceTableRow = ({
+  service,
+  categories,
+}: {
+  service: Service;
+  categories: Category[];
+}) => {
+  const [isAvailable, setIsAvailable] = useState(
+    service.isActive ?? service.availability !== "Not-Active",
+  );
 
   return (
     <TableRow className="transition-colors hover:bg-muted/40">
@@ -51,14 +61,19 @@ const ServiceTableRow = ({ service }: { service: Service }) => {
       {/* Availability */}
       <TableCell className="text-center">
         <AvailabilityBadge
-          availability={service.availability}
-          isActive={service.isActive}
+          availability={isAvailable ? "Active" : "Not-Active"}
+          isActive={isAvailable}
         />
       </TableCell>
 
       {/* Actions */}
       <TableCell className="text-center">
-        <ActionsButton isAvailable={isAvailable} />
+        <ActionsButton
+          service={service}
+          categories={categories}
+          isAvailable={isAvailable}
+          onAvailabilityChange={setIsAvailable}
+        />
       </TableCell>
     </TableRow>
   );

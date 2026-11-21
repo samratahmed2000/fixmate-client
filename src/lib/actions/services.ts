@@ -11,6 +11,7 @@ export const addNewService = async (
 
   const res = await fetch(`${baseUrl}/api/services`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -42,6 +43,7 @@ export const updateService = async (
 
   const res = await fetch(`${baseUrl}/api/services/${id}`, {
     method: "PUT",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -72,6 +74,7 @@ export const deleteService = async (
 
   const res = await fetch(`${baseUrl}/api/services/${id}`, {
     method: "DELETE",
+    credentials: "include",
     cache: "no-store",
   });
 
@@ -100,4 +103,52 @@ export const toggleServiceAvailability = async (
     availability: newAvailability,
     isActive: newAvailability === "Active",
   });
+};
+
+export const toggleServiceStatus = async (
+  id: string,
+): Promise<{ isActive: boolean; message: string }> => {
+  const res = await fetch(`${baseUrl}/api/services/${id}/toggle`, {
+    method: "PATCH",
+    cache: "no-store",
+    credentials: "include",
+  });
+
+  let data: unknown;
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error("The server returned an invalid response");
+  }
+
+  if (!res.ok) {
+    const message =
+      typeof data === "object" &&
+      data !== null &&
+      "message" in data &&
+      typeof data.message === "string"
+        ? data.message
+        : "Failed to update service availability";
+    throw new Error(message);
+  }
+
+  if (
+    typeof data !== "object" ||
+    data === null ||
+    !("data" in data) ||
+    typeof data.data !== "object" ||
+    data.data === null ||
+    !("isActive" in data.data) ||
+    typeof data.data.isActive !== "boolean"
+  ) {
+    throw new Error("The server returned an invalid service status");
+  }
+
+  return {
+    isActive: data.data.isActive,
+    message:
+      "message" in data && typeof data.message === "string"
+        ? data.message
+        : "Service availability updated",
+  };
 };

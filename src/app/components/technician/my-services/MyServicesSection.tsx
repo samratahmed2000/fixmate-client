@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/empty";
 import MyServicesTable from "./MyServicesTable";
 
-const MyServicesSection = ({ services }: MyServicesSectionProps) => {
+const MyServicesSection = ({ services, categories }: MyServicesSectionProps) => {
   return (
     <section className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -59,7 +59,7 @@ const MyServicesSection = ({ services }: MyServicesSectionProps) => {
           </Empty>
         </Card>
       ) : (
-        <MyServicesTable services={services} />
+        <MyServicesTable services={services} categories={categories} />
       )}
     </section>
   );

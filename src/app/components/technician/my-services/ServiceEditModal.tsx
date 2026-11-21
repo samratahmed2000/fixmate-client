@@ -16,7 +16,7 @@ interface ServiceEditModalProps {
   categories: Category[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
+  onSuccess?: () => void;
 }
 
 export const ServiceEditModal = ({
@@ -36,7 +36,7 @@ export const ServiceEditModal = ({
             Update Service
           </DialogTitle>
           <DialogDescription>
-            Update pricing, description, availability, or photos for{" "}
+            Update pricing, description, or photos for{" "}
             <span className="font-medium text-foreground">
               {service.title}
             </span>
@@ -54,7 +54,7 @@ export const ServiceEditModal = ({
             technicianEmail={service.technicianEmail}
             submitButtonText="Save Changes"
             onSuccess={() => {
-              onSuccess();
+              onSuccess?.();
               onOpenChange(false);
             }}
           />

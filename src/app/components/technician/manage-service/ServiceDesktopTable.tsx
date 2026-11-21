@@ -5,10 +5,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { Category } from "@/types/category";
 import type { Service } from "@/types/services";
 import ServiceTableRow from "./ServiceTableRow";
 
-const ServiceDesktopTable = ({ services }: { services: Service[] }) => {
+const ServiceDesktopTable = ({
+  services,
+  categories,
+}: {
+  services: Service[];
+  categories: Category[];
+}) => {
   return (
     <div className="hidden md:block rounded-xl border bg-card shadow-xs overflow-hidden">
       <Table>
@@ -24,7 +31,11 @@ const ServiceDesktopTable = ({ services }: { services: Service[] }) => {
         </TableHeader>
         <TableBody>
           {services.map((service) => (
-            <ServiceTableRow key={service._id} service={service} />
+            <ServiceTableRow
+              key={service._id}
+              service={service}
+              categories={categories}
+            />
           ))}
         </TableBody>
       </Table>

@@ -129,4 +129,5 @@ export interface ServiceImageUploadProps {
 
 export interface MyServicesSectionProps {
   services: Service[];
+  categories: Category[];
 }

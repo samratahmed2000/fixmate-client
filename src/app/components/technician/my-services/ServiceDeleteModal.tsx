@@ -18,7 +18,7 @@ interface ServiceDeleteModalProps {
   service: Service | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: (service: Service) => Promise<void>;
+  onConfirm: (service: Service) => Promise<boolean>;
 }
 
 export const ServiceDeleteModal = ({
@@ -34,8 +34,10 @@ export const ServiceDeleteModal = ({
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
-      await onConfirm(service);
-      onOpenChange(false);
+      const deleted = await onConfirm(service);
+      if (deleted) {
+        onOpenChange(false);
+      }
     } finally {
       setIsDeleting(false);
     }
@@ -44,8 +46,10 @@ export const ServiceDeleteModal = ({
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete service?</AlertDialogTitle>
+        <AlertDialogHeader className="sm:text-center">
+          <AlertDialogTitle className="text-center">
+            Delete service?
+          </AlertDialogTitle>
           <AlertDialogDescription>
             Are you sure you want to delete{" "}
             <span className="font-semibold text-foreground">
@@ -57,10 +61,13 @@ export const ServiceDeleteModal = ({
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting} className="cursor-pointer">
+            Cancel
+          </AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
             disabled={isDeleting}
+            className="cursor-pointer"
             onClick={(e) => {
               e.preventDefault();
               handleDelete();
