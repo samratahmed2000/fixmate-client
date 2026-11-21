@@ -1,4 +1,4 @@
-import { Service } from "./services";
+import type { Service } from "./services";
 
 export interface CreateBookingInput {
   serviceId: string;
@@ -13,4 +13,19 @@ export interface RepairBookingsFormProps {
   name: string;
   email: string;
   onCancel: () => void;
+}
+
+export interface CustomerBooking {
+  _id: string;
+  serviceId: string;
+  bookingDate: string;
+  status: string;
+  paymentStatus?: string;
+  finalAmount?: number | string;
+  basePrice?: number | string;
+  technicianName?: string;
+  service: Pick<
+    Service,
+    "title" | "serviceImage" | "technicianName" | "basePrice"
+  > | null;
 }

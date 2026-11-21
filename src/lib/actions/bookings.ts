@@ -1,5 +1,49 @@
 import { baseUrl } from "../utils";
-import type { CreateBookingInput } from "@/types/bookings";
+import type { CreateBookingInput, CustomerBooking } from "@/types/bookings";
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const getErrorMessage = (data: unknown, fallback: string) =>
+  isRecord(data) && typeof data.message === "string"
+    ? data.message
+    : fallback;
+
+const isCustomerBooking = (value: unknown): value is CustomerBooking =>
+  isRecord(value) &&
+  typeof value._id === "string" &&
+  typeof value.serviceId === "string" &&
+  typeof value.bookingDate === "string" &&
+  typeof value.status === "string" &&
+  (value.service === null || isRecord(value.service));
+
+export const getCustomerBookings = async () => {
+  const res = await fetch(`${baseUrl}/api/bookings/my`, {
+    cache: "no-store",
+    credentials: "include",
+  });
+
+  let data: unknown;
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error("The server returned an invalid response");
+  }
+
+  if (!res.ok) {
+    throw new Error(getErrorMessage(data, "Failed to fetch bookings"));
+  }
+
+  if (!isRecord(data) || !Array.isArray(data.data)) {
+    throw new Error("The server returned an invalid bookings list");
+  }
+
+  if (!data.data.every(isCustomerBooking)) {
+    throw new Error("The server returned invalid booking details");
+  }
+
+  return data.data;
+};
 
 export const hasActiveServiceBooking = async (serviceId: string) => {
   const query = new URLSearchParams({ serviceId });
@@ -16,15 +60,7 @@ export const hasActiveServiceBooking = async (serviceId: string) => {
   }
 
   if (!res.ok) {
-    const message =
-      typeof data === "object" &&
-      data !== null &&
-      "message" in data &&
-      typeof data.message === "string"
-        ? data.message
-        : "Failed to check booking status";
-
-    throw new Error(message);
+    throw new Error(getErrorMessage(data, "Failed to check booking status"));
   }
 
   if (
@@ -58,14 +94,28 @@ export const bookingService = async (booking: CreateBookingInput) => {
   }
 
   if (!res.ok) {
-    const message =
-      typeof data === "object" &&
-      data !== null &&
-      "message" in data &&
-      typeof data.message === "string"
-        ? data.message
-        : "Failed to submit repair request";
+    throw new Error(getErrorMessage(data, "Failed to submit repair request"));
+  }
+};
 
-    throw new Error(message);
+export const cancelCustomerBooking = async (bookingId: string) => {
+  const res = await fetch(
+    `${baseUrl}/api/bookings/${encodeURIComponent(bookingId)}`,
+    {
+      method: "DELETE",
+      cache: "no-store",
+      credentials: "include",
+    },
+  );
+
+  let data: unknown;
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error("The server returned an invalid response");
+  }
+
+  if (!res.ok) {
+    throw new Error(getErrorMessage(data, "Failed to cancel booking"));
   }
 };
