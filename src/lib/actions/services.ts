@@ -61,3 +61,43 @@ export const updateService = async (
 
   return data;
 };
+
+// Delete Service
+export const deleteService = async (
+  id: string,
+): Promise<{ success: boolean; message: string }> => {
+  if (!baseUrl) {
+    throw new Error("BASE_URL is not configured");
+  }
+
+  const res = await fetch(`${baseUrl}/api/services/${id}`, {
+    method: "DELETE",
+    cache: "no-store",
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(
+      typeof data?.message === "string"
+        ? data.message
+        : "Failed to delete service",
+    );
+  }
+
+  return {
+    success: true,
+    message: data?.message || "Service deleted successfully",
+  };
+};
+
+// Toggle Service Availability (Active / Not-Active)
+export const toggleServiceAvailability = async (
+  id: string,
+  newAvailability: "Active" | "Not-Active",
+): Promise<{ success: boolean; message: string }> => {
+  return updateService(id, {
+    availability: newAvailability,
+    isActive: newAvailability === "Active",
+  });
+};

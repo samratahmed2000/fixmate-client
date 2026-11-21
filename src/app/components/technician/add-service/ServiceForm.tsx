@@ -24,6 +24,7 @@ const ServiceForm = ({
   mode = "add",
   initialData,
   serviceId,
+  technicianId: propTechnicianId,
   technicianName: propTechnicianName,
   technicianEmail: propTechnicianEmail,
   submitButtonText,
@@ -34,6 +35,8 @@ const ServiceForm = ({
   const { data: session } = useSession();
 
   // Prefer session info, fallback to props or initialData
+  const technicianId =
+    session?.user?.id || propTechnicianId || initialData?.technicianId || "";
   const technicianName =
     session?.user?.name ||
     propTechnicianName ||
@@ -80,6 +83,7 @@ const ServiceForm = ({
           existingImageUrl: initialData?.serviceImage || values.existingImage,
           technicianName,
           technicianEmail,
+          technicianId,
           setErrors,
           setIsSubmitting,
           router,

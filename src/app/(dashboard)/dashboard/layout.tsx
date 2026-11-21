@@ -3,16 +3,28 @@ import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
 import DashboardSidebar from "@/app/components/dashboard/DashboardSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getDashboardUser } from "@/lib/dashboard/getDashboardUser";
+import { getSession } from "@/lib/core/server";
+import { isRole } from "@/lib/dashboard/MenuItemsByRole";
+import type { DashboardUser } from "@/types/dashboard";
 
 async function HeaderWithUser() {
-  const user = await getDashboardUser();
+  const session = await getSession();
+  const sessionUser = session?.user;
+  const user: DashboardUser | null = sessionUser
+    ? {
+        name: sessionUser.name ?? null,
+        email: sessionUser.email ?? null,
+        image: sessionUser.image ?? null,
+        role: isRole(sessionUser.role) ? sessionUser.role : null,
+      }
+    : null;
   return <DashboardHeader initialUser={user} />;
 }
 
 async function SidebarWithRole() {
-  const user = await getDashboardUser();
-  return <DashboardSidebar initialRole={user?.role ?? null} />;
+  const session = await getSession();
+  const role = session?.user.role;
+  return <DashboardSidebar initialRole={isRole(role) ? role : null} />;
 }
 
 function HeaderFallback() {

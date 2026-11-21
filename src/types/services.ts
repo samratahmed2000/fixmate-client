@@ -2,6 +2,8 @@ import type { Category } from "./category";
 
 export type ServiceMode = "Home Visit" | "Shop Drop Off";
 export type DurationUnit = "Minutes" | "Hours" | "Days";
+export type ApprovalStatus = "Pending" | "Approved" | "Rejected";
+export type AvailabilityStatus = "Active" | "Not-Active";
 
 export type ServiceFormErrors = Partial<
   Record<keyof ServiceFormValues | "general", string>
@@ -19,6 +21,11 @@ export interface Service {
   serviceImage: string;
   technicianName: string;
   technicianEmail: string;
+  technicianId?: string;
+  approvalStatus?: ApprovalStatus;
+  availability?: AvailabilityStatus;
+  isActive?: boolean;
+  createdAt?: string;
 }
 
 export type InsertedService = {
@@ -44,6 +51,7 @@ export interface ServiceFormProps {
   mode?: "add" | "update";
   initialData?: Partial<Service>;
   serviceId?: string;
+  technicianId?: string;
   technicianName?: string;
   technicianEmail?: string;
   submitButtonText?: string;
@@ -78,6 +86,7 @@ export interface ServiceSubmitOptions {
   existingImageUrl?: string;
   technicianName: string;
   technicianEmail: string;
+  technicianId?: string;
   setErrors: React.Dispatch<React.SetStateAction<ServiceFormErrors>>;
   setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
   router?: { push: (url: string) => void; refresh?: () => void };
@@ -116,4 +125,8 @@ export interface ServiceImageUploadProps {
   existingImageUrl?: string;
   error?: string;
   disabled?: boolean;
+}
+
+export interface MyServicesSectionProps {
+  services: Service[];
 }

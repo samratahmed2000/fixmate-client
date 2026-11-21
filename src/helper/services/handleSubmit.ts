@@ -5,6 +5,8 @@ import { imageUpload } from "@/lib/actions/upload";
 import type { Service, ServiceSubmitOptions } from "@/types/services";
 import { validateServiceForm } from "./handleServiceForm";
 
+export type { ServiceSubmitOptions };
+
 export const handleSubmit = async (
   event: React.FormEvent<HTMLFormElement>,
   {
@@ -14,6 +16,7 @@ export const handleSubmit = async (
     existingImageUrl,
     technicianName,
     technicianEmail,
+    technicianId,
     setErrors,
     setIsSubmitting,
     router,
@@ -71,6 +74,7 @@ export const handleSubmit = async (
       serviceImage: finalImageUrl,
       technicianName,
       technicianEmail,
+      technicianId,
     };
 
     if (onSubmit) {

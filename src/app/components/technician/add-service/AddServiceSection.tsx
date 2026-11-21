@@ -1,13 +1,14 @@
 import { Category } from "@/types/category";
-import { getDashboardUser } from "@/lib/dashboard/getDashboardUser";
 import getCategories from "@/lib/api/getCategories";
+import { getSession } from "@/lib/core/server";
 import ServiceForm from "./ServiceForm";
 
 const AddServiceSection = async () => {
-  const [user, categories] = await Promise.all([
-    getDashboardUser().catch(() => null),
+  const [session, categories] = await Promise.all([
+    getSession(),
     getCategories().catch(() => []),
   ]);
+  const user = session?.user;
 
   const allCategories: Category[] = Array.isArray(categories)
     ? categories
@@ -17,6 +18,7 @@ const AddServiceSection = async () => {
     <ServiceForm
       categories={allCategories}
       mode="add"
+      technicianId={user?.id ?? ""}
       technicianName={user?.name ?? ""}
       technicianEmail={user?.email ?? ""}
     />

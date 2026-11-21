@@ -114,14 +114,14 @@ const ServiceDetailsCard = ({
                 </span>
               </FieldLabel>
               <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-                {values.description.length}/800
+                {values.description.length}/2000
               </span>
             </div>
             <Textarea
               id="service-description"
               name="description"
               rows={4}
-              maxLength={800}
+              maxLength={2000}
               placeholder="What is included, what you need from the customer, and anything that affects the price…"
               value={values.description}
               disabled={isSubmitting}

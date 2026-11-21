@@ -30,8 +30,8 @@ export const validateServiceForm = (
     errors.description = "Description is required.";
   } else if (description.length < 20) {
     errors.description = "Add at least 20 characters describing the service.";
-  } else if (description.length > 600) {
-    errors.description = "Keep the description under 600 characters.";
+  } else if (description.length > 2000) {
+    errors.description = "Keep the description under 2000 characters.";
   }
 
   const price = Number(values.basePrice);
