@@ -180,7 +180,7 @@ const DashboardSidebar = ({
               <SidebarMenuButton
                 tooltip="Log out"
                 onClick={handleSignOut}
-                className="min-w-0 text-sidebar-foreground/70 hover:text-destructive"
+                className="min-w-0 text-sidebar-foreground/70 hover:text-destructive cursor-pointer"
               >
                 <LogOutIcon />
                 <span>Sign Out</span>
@@ -190,7 +190,7 @@ const DashboardSidebar = ({
                 variant="ghost"
                 size="icon"
                 aria-label="Settings"
-                className="shrink-0 text-sidebar-foreground/70 group-data-[collapsible=icon]:mx-auto hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                className="shrink-0 text-sidebar-foreground/70 group-data-[collapsible=icon]:mx-auto hover:bg-sidebar-accent hover:text-sidebar-accent-foreground cursor-pointer"
                 nativeButton={false}
                 render={<Link href="/dashboard/profile" />}
               >

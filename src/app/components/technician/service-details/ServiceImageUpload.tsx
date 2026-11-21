@@ -99,6 +99,7 @@ const ServiceImageUpload = ({
               className="size-full object-cover"
               width={144}
               height={90}
+              unoptimized
             />
           ) : (
             <span className="flex flex-col items-center gap-1.5 px-4 text-center">

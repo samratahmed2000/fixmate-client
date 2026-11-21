@@ -24,3 +24,26 @@ export const getAllServices = async (): Promise<Service[]> => {
 
   return list as Service[];
 };
+
+// Service Details
+export const getServiceById = async (
+  serviceId: string,
+): Promise<Service | null> => {
+  if (!baseUrl) {
+    throw new Error("BASE_URL is not configured");
+  }
+
+  const res = await fetch(`${baseUrl}/api/services/${serviceId}`, {
+    cache: "no-store",
+  });
+
+  if (res.status === 404) {
+    return null;
+  }
+
+  if (!res.ok) {
+    throw new Error("Failed to load service details");
+  }
+
+  return (await res.json()) as Service | null;
+};

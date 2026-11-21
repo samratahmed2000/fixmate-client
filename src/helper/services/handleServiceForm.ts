@@ -17,7 +17,7 @@ export const validateServiceForm = (
     errors.title = "Service title is required.";
   } else if (title.length < 5) {
     errors.title = "Use at least 5 characters.";
-  } else if (title.length > 80) {
+  } else if (title.length > 40) {
     errors.title = "Keep the title under 80 characters.";
   }
 
@@ -57,8 +57,8 @@ export const validateServiceForm = (
   const area = values.serviceArea.trim();
   if (!area) {
     errors.serviceArea = "Service area is required.";
-  } else if (area.length > 80) {
-    errors.serviceArea = "Keep the area under 80 characters.";
+  } else if (area.length > 40) {
+    errors.serviceArea = "Keep the area under 40 characters.";
   }
 
   const hasImage = Boolean(
@@ -77,10 +77,6 @@ export const validateServiceForm = (
   return errors;
 };
 
-/**
- * Updates a single form field and clears its previous error, so a corrected
- * field never keeps a stale message.
- */
 export const handleServiceFieldChange = <K extends keyof ServiceFormValues>(
   key: K,
   value: ServiceFormValues[K],

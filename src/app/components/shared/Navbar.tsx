@@ -20,11 +20,18 @@ import {
   isActivePath,
   navLinkClass,
 } from "@/lib/navigation/nav-links";
+import { useSession } from "@/lib/auth-client";
 import AuthActions from "./AuthActions";
 
 const Navbar = () => {
   const pathname = usePathname();
-  const navLinks = getNavLinks();
+  const { data: session, isPending } = useSession();
+  const role = session?.user.role;
+  const navLinks = getNavLinks().filter(
+    (link) =>
+      link.href !== "/services" ||
+      (!isPending && role !== "technician" && role !== "admin"),
+  );
   const [open, setOpen] = React.useState(false);
 
   return (

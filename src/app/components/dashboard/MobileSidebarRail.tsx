@@ -84,7 +84,7 @@ const MobileSidebarRail = ({
             })}
       </div>
 
-      <div className="mt-auto flex w-full flex-col items-center gap-1">
+      <div className="mt-auto flex w-full flex-col items-center gap-1 cursor-pointer">
         <button
           type="button"
           aria-label="Sign Out"
