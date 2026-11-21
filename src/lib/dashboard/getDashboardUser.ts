@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { headers } from "next/headers";
 
-import { auth } from "@/lib/auth";
+import { auth, ensureMongoConnection } from "@/lib/auth";
 import { isRole } from "@/lib/dashboard/MenuItemsByRole";
 import { DashboardUser } from "@/types/dashboard";
 
@@ -20,6 +20,9 @@ export const getDashboardUser = cache(
     const requestHeaders = await headers();
 
     try {
+      // Same reconnect guard the auth route handler uses: a server render can
+      // be the first better-auth call after the driver closed its topology.
+      await ensureMongoConnection();
       const session = await auth.api.getSession({ headers: requestHeaders });
       const user = session?.user;
 
