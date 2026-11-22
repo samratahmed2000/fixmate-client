@@ -2,18 +2,25 @@ import { baseUrl } from "../utils";
 
 const getCategories = async () => {
   if (!baseUrl) {
-    throw new Error("BASE_URL is not configured");
+    console.error("BASE_URL is not configured");
+    return { data: [] };
   }
 
-  const res = await fetch(`${baseUrl}/api/categories`, {
-    next: { revalidate: 60 },
-  });
+  try {
+    const res = await fetch(`${baseUrl}/api/categories`, {
+      next: { revalidate: 60 },
+    });
 
-  if (!res.ok) {
-    throw new Error("Failed to load categories");
+    if (!res.ok) {
+      console.error("Failed to load categories:", res.status);
+      return { data: [] };
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return { data: [] };
   }
-
-  return await res.json();
 };
 
 export default getCategories;
