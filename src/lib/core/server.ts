@@ -52,3 +52,11 @@ export const requireDashboardRole = async (
 
   return session.user;
 };
+
+export const requireAuthenticatedUser = async () => {
+  const session = await getSession();
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
+  return session.user;
+};

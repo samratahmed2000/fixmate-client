@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { signOut } from "@/lib/auth-client";
+import { getRoleBadgeClassName } from "@/lib/dashboard/role-badge";
 import { cn } from "@/lib/utils";
 import { NavUser, UserMenuProps } from "@/types/navigation";
 
@@ -125,7 +126,7 @@ const UserMenu = ({ user, compact = false, onNavigate }: UserMenuProps) => {
                 </p>
                 <Badge
                   variant="outline"
-                  className="mt-1.5 border-primary/15 bg-primary/10 text-[10px] font-semibold tracking-wide text-primary uppercase"
+                  className={`mt-1.5 text-[10px] font-semibold tracking-wide uppercase ${getRoleBadgeClassName(role)}`}
                 >
                   {roleLabel}
                 </Badge>
