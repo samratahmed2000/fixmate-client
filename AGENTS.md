@@ -25,7 +25,8 @@ Next.js 16.4.6 App Router + React 19.3 client for a device/appliance repair plat
 ## Backend dependency
 
 - Data comes from the sibling repo `../fixmate-server` (Express + MongoDB, `npm run dev` there, default port 8000). It must be running for most pages to render.
-- `baseUrl` is hardcoded to `http://localhost:8000` in `src/lib/utils.ts`; there is no env var for it.
+- `baseUrl` in `src/lib/utils.ts` comes from `NEXT_PUBLIC_API_URL` (no fallback). In the browser it resolves to `<origin>/api/proxy`, a same-origin rewrite in `next.config.ts` that forwards to the API (destination also built from `NEXT_PUBLIC_API_URL`). That proxy is required: the better-auth session cookie is host-only, so a direct cross-site call to the API drops the cookie and every protected endpoint answers 401 (it only works on `localhost`, where 3000 and 8000 share a host and cookies ignore ports). Server components use the API origin directly.
+- The proxy prefix must stay `/api/proxy/*`; a generic `/api/:path*` rewrite runs before dynamic routes and would shadow `/api/auth/[...all]`.
 - `src/lib/api/getCategories.ts` is the only API client. It throws when the API is down, and `Footer` + `PopularCategories` are server components that `await` it — so `/`, `/about`, `/services` 500 without the backend. The list endpoints return `{ success, message, data }`, and callers already unwrap `data` with an `Array.isArray` fallback.
 - Server fetches use `next: { revalidate: 60 }`, so pages build as static with a 1-minute revalidate: fresh API data is not visible immediately in dev/prod.
 

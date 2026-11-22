@@ -1,3 +1,11 @@
 export { cn } from "cn";
 
-export const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+const serverApiUrl = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(
+  /\/+$/,
+  "",
+);
+
+export const baseUrl =
+  typeof window === "undefined"
+    ? serverApiUrl
+    : `${window.location.origin}/api/proxy`;
