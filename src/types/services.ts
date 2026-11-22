@@ -3,6 +3,7 @@ import type { Category } from "./category";
 export type ServiceMode = "Home Visit" | "Shop Drop Off";
 export type DurationUnit = "Minutes" | "Hours" | "Days";
 export type ApprovalStatus = "Pending" | "Approved" | "Rejected";
+export type ApprovalStatusFilter = "all" | "pending" | "approved" | "rejected";
 export type AvailabilityStatus = "Active" | "Not-Active";
 
 export type ServiceFormErrors = Partial<

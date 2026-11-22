@@ -7,6 +7,7 @@ export interface ServiceQuery {
   mode?: string[];
   sort?: string;
   limit?: number;
+  includePending?: boolean;
 }
 
 // All Services
@@ -23,6 +24,7 @@ export const getAllServices = async (
   if (query.mode?.length) params.set("mode", query.mode.join(","));
   if (query.sort) params.set("sort", query.sort);
   if (query.limit) params.set("limit", String(query.limit));
+  if (query.includePending) params.set("includePending", "true");
 
   const queryString = params.toString();
   const res = await fetch(

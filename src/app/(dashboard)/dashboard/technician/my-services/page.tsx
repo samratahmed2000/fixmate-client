@@ -9,7 +9,7 @@ import type { Category } from "@/types/category";
 const MyServicesContent = async () => {
   const [session, allServices, categoryResponse] = await Promise.all([
     getSession(),
-    getAllServices(),
+    getAllServices({ includePending: true }),
     getCategories(),
   ]);
   const categories: Category[] = Array.isArray(categoryResponse)

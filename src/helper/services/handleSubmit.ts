@@ -75,6 +75,9 @@ export const handleSubmit = async (
       technicianName,
       technicianEmail,
       technicianId,
+      approvalStatus: "Pending",
+      isActive: false,
+      availability: "Not-Active",
     };
 
     if (onSubmit) {
@@ -88,8 +91,8 @@ export const handleSubmit = async (
     toast.add({
       title: isUpdate ? "Service Updated" : "Service Added",
       description: isUpdate
-        ? "Your service has been updated successfully."
-        : "Your service is now live and visible to customers.",
+        ? "Your changes were submitted and need admin approval."
+        : "Your service was submitted and is waiting for admin approval.",
       type: "success",
     });
 
