@@ -9,7 +9,26 @@ import { requireCustomerAccess } from "@/lib/core/server";
 import { isServiceAvailable } from "@/lib/services/availability";
 
 const ServicesList = async () => {
-  const allServices = await getAllServices();
+  let allServices: Awaited<ReturnType<typeof getAllServices>>;
+  try {
+    allServices = await getAllServices();
+  } catch (error) {
+    console.error("Failed to load available services:", error);
+
+    return (
+      <Card className="border-dashed">
+        <CardContent className="py-10 text-center">
+          <h2 className="font-heading text-lg font-semibold">
+            Services are temporarily unavailable
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Please try again later. If the problem continues, contact support.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const services = allServices.filter(isServiceAvailable);
 
   return (
