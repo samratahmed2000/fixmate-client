@@ -6,6 +6,7 @@ export interface ServiceQuery {
   category?: string[];
   mode?: string[];
   sort?: string;
+  limit?: number;
 }
 
 // All Services
@@ -21,6 +22,7 @@ export const getAllServices = async (
   if (query.category?.length) params.set("category", query.category.join(","));
   if (query.mode?.length) params.set("mode", query.mode.join(","));
   if (query.sort) params.set("sort", query.sort);
+  if (query.limit) params.set("limit", String(query.limit));
 
   const queryString = params.toString();
   const res = await fetch(
@@ -32,6 +34,34 @@ export const getAllServices = async (
 
   if (!res.ok) {
     throw new Error("Failed to fetch services");
+  }
+
+  const result = await res.json();
+  const list = Array.isArray(result)
+    ? result
+    : Array.isArray(result?.data)
+      ? result.data
+      : [];
+
+  return list as Service[];
+};
+
+export const getFeaturedServices = async (
+  limit = 6,
+): Promise<Service[]> => {
+  if (!baseUrl) {
+    throw new Error("BASE_URL is not configured");
+  }
+
+  const res = await fetch(
+    `${baseUrl}/api/services/featured?limit=${encodeURIComponent(limit)}`,
+    {
+      next: { revalidate: 60 },
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch featured services");
   }
 
   const result = await res.json();
