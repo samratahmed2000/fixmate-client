@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import HideForAdminAndTechnician from "../HideForAdminAndTechnician";
 
 const OurServicesDetails = () => {
   return (
@@ -70,18 +71,20 @@ const OurServicesDetails = () => {
                 ))}
               </ul>
 
-              <div className="mt-8 pt-4">
-                <Link
-                  href="/services"
-                  className={cn(
-                    buttonVariants({ variant: "outline", size: "default" }),
-                    "w-full sm:w-auto",
-                  )}
-                >
-                  Browse Our Services
-                  <ArrowRight aria-hidden="true" className="size-4" />
-                </Link>
-              </div>
+              <HideForAdminAndTechnician>
+                <div className="mt-8 pt-4">
+                  <Link
+                    href="/services"
+                    className={cn(
+                      buttonVariants({ variant: "outline", size: "default" }),
+                      "w-full sm:w-auto",
+                    )}
+                  >
+                    Browse Our Services
+                    <ArrowRight aria-hidden="true" className="size-4" />
+                  </Link>
+                </div>
+              </HideForAdminAndTechnician>
             </CardContent>
           </Card>
 
@@ -124,18 +127,20 @@ const OurServicesDetails = () => {
                 ))}
               </ul>
 
-              <div className="mt-8 pt-4">
-                <Link
-                  href="/become-technician"
-                  className={cn(
-                    buttonVariants({ size: "default" }),
-                    "w-full sm:w-auto",
-                  )}
-                >
-                  Join as a Technician
-                  <ArrowRight aria-hidden="true" className="size-4" />
-                </Link>
-              </div>
+              <HideForAdminAndTechnician>
+                <div className="mt-8 pt-4">
+                  <Link
+                    href="/become-technician"
+                    className={cn(
+                      buttonVariants({ size: "default" }),
+                      "w-full sm:w-auto",
+                    )}
+                  >
+                    Join as a Technician
+                    <ArrowRight aria-hidden="true" className="size-4" />
+                  </Link>
+                </div>
+              </HideForAdminAndTechnician>
             </CardContent>
           </Card>
         </div>

@@ -7,9 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Service } from "@/types/services";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 
 const ServicesCard = ({ service }: { service: Service }) => {
   const router = useRouter();
+  const { data: session, isPending } = useSession();
+  const role = session?.user?.role;
+  const canViewDetails = !isPending && (!role || role === "customer");
 
   const handleViewServiceDetails = async () => {
     router.push(`/services/${service._id}`);
@@ -64,12 +68,14 @@ const ServicesCard = ({ service }: { service: Service }) => {
             </div>
           </div>
 
-          <Button
-            onClick={handleViewServiceDetails}
-            className="mt-auto mb-4 w-full cursor-pointer"
-          >
-            View Details
-          </Button>
+          {canViewDetails ? (
+            <Button
+              onClick={handleViewServiceDetails}
+              className="mt-auto mb-4 w-full cursor-pointer"
+            >
+              View Details
+            </Button>
+          ) : null}
         </CardContent>
       </Card>
     </>

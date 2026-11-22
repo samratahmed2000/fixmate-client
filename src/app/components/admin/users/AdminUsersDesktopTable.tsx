@@ -10,15 +10,25 @@ import type { AdminUser } from "@/types/admin";
 import AdminUserAvatar from "./AdminUserAvatar";
 import AdminUserDate from "./AdminUserDate";
 import AdminUserRoleBadge from "./AdminUserRoleBadge";
+import AdminUserApplication from "./AdminUserApplication";
 
-const AdminUsersDesktopTable = ({ users }: { users: AdminUser[] }) => (
-  <div className="hidden overflow-hidden rounded-xl border bg-card shadow-xs md:block">
+const AdminUsersDesktopTable = ({
+  users,
+  approvingUserId,
+  onApprove,
+}: {
+  users: AdminUser[];
+  approvingUserId: string | null;
+  onApprove: (userId: string) => void;
+}) => (
+  <div className="hidden overflow-x-auto rounded-xl border bg-card shadow-xs md:block">
     <Table>
       <TableHeader>
         <TableRow className="bg-muted/30">
-          <TableHead className="w-[38%]">User</TableHead>
+          <TableHead className="w-[24%]">User</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Role</TableHead>
+          <TableHead>Technician Application</TableHead>
           <TableHead>Joined</TableHead>
         </TableRow>
       </TableHeader>
@@ -38,6 +48,13 @@ const AdminUsersDesktopTable = ({ users }: { users: AdminUser[] }) => (
             </TableCell>
             <TableCell>
               <AdminUserRoleBadge role={user.role} />
+            </TableCell>
+            <TableCell>
+              <AdminUserApplication
+                user={user}
+                isApproving={approvingUserId === user.id}
+                onApprove={onApprove}
+              />
             </TableCell>
             <TableCell className="text-muted-foreground">
               <AdminUserDate value={user.createdAt} />

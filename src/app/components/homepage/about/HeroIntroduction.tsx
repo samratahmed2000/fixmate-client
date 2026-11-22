@@ -2,6 +2,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ArrowRight, Wrench } from "lucide-react";
 import Link from "next/link";
+import HideForAdminAndTechnician from "../HideForAdminAndTechnician";
 
 const HeroIntroduction = () => {
   return (
@@ -30,24 +31,29 @@ const HeroIntroduction = () => {
             finish.
           </p>
 
-          <div className="my-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/services"
-              className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}
-            >
-              Our Services
-              <ArrowRight aria-hidden="true" className="size-4" />
-            </Link>
-            <Link
-              href="/become-technician"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "lg" }),
-                "w-full sm:w-auto",
-              )}
-            >
-              Join as Technician
-            </Link>
-          </div>
+          <HideForAdminAndTechnician>
+            <div className="my-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link
+                href="/services"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "w-full sm:w-auto",
+                )}
+              >
+                Our Services
+                <ArrowRight aria-hidden="true" className="size-4" />
+              </Link>
+              <Link
+                href="/become-technician"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "lg" }),
+                  "w-full sm:w-auto",
+                )}
+              >
+                Join as Technician
+              </Link>
+            </div>
+          </HideForAdminAndTechnician>
         </div>
       </div>
     </section>

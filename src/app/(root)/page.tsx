@@ -3,15 +3,21 @@ import HowFixMateWorks from "../components/homepage/HowFixMateWorks";
 import PopularCategories from "../components/homepage/category/PopularCategories";
 import WhyChooseUs from "../components/homepage/WhyChooseUs";
 import FeaturedService from "../components/homepage/featured-service/FeaturedService";
+import CustomerHomepageSection from "../components/homepage/CustomerHomepageSection";
+import HideForAdminAndTechnician from "../components/homepage/HideForAdminAndTechnician";
 
 const Homepage = () => {
   return (
     <main>
       <Hero />
-      <FeaturedService />
+      <HideForAdminAndTechnician>
+        <FeaturedService />
+      </HideForAdminAndTechnician>
       <HowFixMateWorks />
       <WhyChooseUs />
-      <PopularCategories />
+      <CustomerHomepageSection>
+        <PopularCategories />
+      </CustomerHomepageSection>
     </main>
   );
 };

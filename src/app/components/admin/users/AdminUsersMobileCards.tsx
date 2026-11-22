@@ -3,8 +3,17 @@ import type { AdminUser } from "@/types/admin";
 import AdminUserAvatar from "./AdminUserAvatar";
 import AdminUserDate from "./AdminUserDate";
 import AdminUserRoleBadge from "./AdminUserRoleBadge";
+import AdminUserApplication from "./AdminUserApplication";
 
-const AdminUsersMobileCards = ({ users }: { users: AdminUser[] }) => (
+const AdminUsersMobileCards = ({
+  users,
+  approvingUserId,
+  onApprove,
+}: {
+  users: AdminUser[];
+  approvingUserId: string | null;
+  onApprove: (userId: string) => void;
+}) => (
   <div className="grid gap-3 md:hidden">
     {users.map((user) => (
       <Card key={user.id} size="sm" className="border-border shadow-xs">
@@ -27,6 +36,16 @@ const AdminUsersMobileCards = ({ users }: { users: AdminUser[] }) => (
               <AdminUserDate value={user.createdAt} />
             </div>
           </div>
+          {user.technicianApplication?.status === "pending" &&
+          user.role === "customer" ? (
+            <div className="border-t pt-3">
+              <AdminUserApplication
+                user={user}
+                isApproving={approvingUserId === user.id}
+                onApprove={onApprove}
+              />
+            </div>
+          ) : null}
         </CardContent>
       </Card>
     ))}

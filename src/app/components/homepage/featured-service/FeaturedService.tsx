@@ -1,11 +1,9 @@
-import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { getFeaturedServices } from "@/lib/api/services";
 import { isServiceAvailable } from "@/lib/services/availability";
 import ServicesCard from "@/app/components/services/ServicesCard";
-import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import HomepageServiceActions from "../HomepageServiceActions";
 import type { Service } from "@/types/services";
 
 const FeaturedService = async () => {
@@ -51,13 +49,7 @@ const FeaturedService = async () => {
             </ul>
 
             <div className="mt-8 flex justify-center">
-              <Link
-                href="/services"
-                className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
-              >
-                View All Services
-                <ArrowRight aria-hidden="true" />
-              </Link>
+              <HomepageServiceActions />
             </div>
           </>
         ) : (

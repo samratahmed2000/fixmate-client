@@ -1,9 +1,7 @@
-import Link from "next/link";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import ImageCarousel from "@/app/components/shared/ImageCarousel";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { heroImages } from "@/lib/images/hero-images";
+import HomepageHeroActions from "./HomepageHeroActions";
 
 const Hero = () => {
   return (
@@ -38,27 +36,7 @@ const Hero = () => {
                 doorstep.
               </p>
 
-              <div className="mt-6 flex w-full flex-col items-center gap-3 sm:mt-8 sm:w-auto sm:flex-row">
-                <Link
-                  href="/services"
-                  className={cn(
-                    buttonVariants({ size: "lg" }),
-                    "pointer-events-auto w-full bg-background text-foreground hover:bg-background/90 sm:w-auto",
-                  )}
-                >
-                  Repair Services
-                  <ArrowRight aria-hidden="true" />
-                </Link>
-                <Link
-                  href="/become-technician"
-                  className={cn(
-                    buttonVariants({ variant: "outline", size: "lg" }),
-                    "pointer-events-auto w-full border-white/60 bg-white/10 text-white hover:bg-white/20 hover:text-white sm:w-auto",
-                  )}
-                >
-                  Become a Technician
-                </Link>
-              </div>
+              <HomepageHeroActions />
             </div>
           </>
         }

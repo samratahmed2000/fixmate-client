@@ -4,6 +4,7 @@ import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/components/ui/toast";
 import type { AdminUser } from "@/types/admin";
 import AdminUsersTable from "./AdminUsersTable";
 
@@ -11,6 +12,9 @@ const AdminUsersView = () => {
   const [users, setUsers] = React.useState<AdminUser[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState("");
+  const [approvingUserId, setApprovingUserId] = React.useState<string | null>(
+    null,
+  );
 
   React.useEffect(() => {
     let isCurrent = true;
@@ -38,6 +42,51 @@ const AdminUsersView = () => {
       isCurrent = false;
     };
   }, []);
+
+  const handleApprove = async (userId: string) => {
+    setApprovingUserId(userId);
+    try {
+      const response = await fetch("/api/admin/users", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: userId }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to approve technician");
+      }
+
+      setUsers((currentUsers) =>
+        currentUsers.map((user) =>
+          user.id === userId
+            ? {
+                ...user,
+                role: "technician",
+                technicianApplication: user.technicianApplication
+                  ? { ...user.technicianApplication, status: "approved" }
+                  : null,
+              }
+            : user,
+        ),
+      );
+      toast.add({
+        title: "Application Approved",
+        description: "The customer account is now a technician account.",
+        type: "success",
+      });
+    } catch (cause) {
+      toast.add({
+        title: "Approval Failed",
+        description:
+          cause instanceof Error
+            ? cause.message
+            : "Failed to approve technician application",
+        type: "error",
+      });
+    } finally {
+      setApprovingUserId(null);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -78,7 +127,11 @@ const AdminUsersView = () => {
       </div>
 
       {users.length > 0 ? (
-        <AdminUsersTable users={users} />
+        <AdminUsersTable
+          users={users}
+          approvingUserId={approvingUserId}
+          onApprove={handleApprove}
+        />
       ) : (
         <Card className="border-dashed">
           <CardContent className="py-10 text-center text-sm text-muted-foreground">

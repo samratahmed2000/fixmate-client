@@ -1,6 +1,8 @@
 import { baseUrl } from "../utils";
 import type {
   CreateBookingInput,
+  AdminBooking,
+  AdminBookingStatusFilter,
   CustomerBooking,
   TechnicianBooking,
   TechnicianBookingStatus,
@@ -35,6 +37,51 @@ const isTechnicianBooking = (value: unknown): value is TechnicianBooking =>
   typeof value.paymentStatus === "string" &&
   (value.service === null ||
     (isRecord(value.service) && typeof value.service.title === "string"));
+
+const isAdminBooking = (value: unknown): value is AdminBooking =>
+  isRecord(value) &&
+  typeof value._id === "string" &&
+  (value.service === null ||
+  (isRecord(value.service) && typeof value.service.title === "string")) &&
+  typeof value.customerName === "string" &&
+  typeof value.technicianName === "string" &&
+  typeof value.bookingDate === "string" &&
+  typeof value.status === "string" &&
+  typeof value.paymentStatus === "string" &&
+  (value.amount === null ||
+  typeof value.amount === "number" ||
+  typeof value.amount === "string");
+
+export const getAdminBookings = async (
+  status: AdminBookingStatusFilter,
+): Promise<AdminBooking[]> => {
+  const query = new URLSearchParams({ status });
+  const res = await fetch(`${baseUrl}/api/bookings/admin?${query}`, {
+  cache: "no-store",
+  credentials: "include",
+  });
+
+  let data: unknown;
+  try {
+  data = await res.json();
+  } catch {
+  throw new Error("The server returned an invalid response");
+  }
+
+  if (!res.ok) {
+  throw new Error(getErrorMessage(data, "Failed to fetch bookings"));
+  }
+
+  if (!isRecord(data) || !Array.isArray(data.data)) {
+  throw new Error("The server returned an invalid bookings list");
+  }
+
+  if (!data.data.every(isAdminBooking)) {
+  throw new Error("The server returned invalid booking details");
+  }
+
+  return data.data;
+};
 
 export const getTechnicianBookings = async (): Promise<TechnicianBooking[]> => {
   const res = await fetch(`${baseUrl}/api/bookings/technician`, {

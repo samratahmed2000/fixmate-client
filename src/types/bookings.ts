@@ -49,3 +49,23 @@ export interface TechnicianBooking {
   finalAmount?: number;
   service: Pick<Service, "title" | "basePrice"> | null;
 }
+
+export type AdminBookingStatusFilter =
+  | "all"
+  | "requested"
+  | "accepted"
+  | "in-progress"
+  | "completed"
+  | "cancelled"
+  | "rejected";
+
+export interface AdminBooking {
+  _id: string;
+  service: Pick<Service, "title"> | null;
+  customerName: string;
+  technicianName: string;
+  bookingDate: string;
+  status: string;
+  paymentStatus: string;
+  amount: number | string | null;
+}
