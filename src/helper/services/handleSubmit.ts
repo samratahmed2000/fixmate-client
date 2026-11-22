@@ -1,6 +1,7 @@
 import type * as React from "react";
 import { toast } from "@/components/ui/toast";
 import { addNewService, updateService } from "@/lib/actions/services";
+import { notifyDashboardDataUpdated } from "@/lib/dashboard/refresh";
 import { imageUpload } from "@/lib/actions/upload";
 import type { Service, ServiceSubmitOptions } from "@/types/services";
 import { validateServiceForm } from "./handleServiceForm";
@@ -76,8 +77,7 @@ export const handleSubmit = async (
       technicianEmail,
       technicianId,
       approvalStatus: "Pending",
-      isActive: false,
-      availability: "Not-Active",
+      ...(isUpdate ? {} : { isActive: true, availability: "Active" }),
     };
 
     if (onSubmit) {
@@ -88,6 +88,7 @@ export const handleSubmit = async (
       await addNewService(serviceData);
     }
 
+    notifyDashboardDataUpdated();
     toast.add({
       title: isUpdate ? "Service Updated" : "Service Added",
       description: isUpdate

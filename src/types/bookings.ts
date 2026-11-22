@@ -21,13 +21,29 @@ export interface CustomerBooking {
   bookingDate: string;
   status: string;
   paymentStatus?: string;
+  paymentRequested?: boolean;
   finalAmount?: number | string;
   basePrice?: number | string;
   technicianName?: string;
   service: Pick<
     Service,
-    "title" | "serviceImage" | "technicianName" | "basePrice"
+    | "title"
+    | "serviceImage"
+    | "technicianName"
+    | "basePrice"
+    | "category"
+    | "serviceMode"
   > | null;
+}
+
+export interface CustomerPayment {
+  id: string;
+  service: string;
+  title: string;
+  technicianName: string;
+  amount: number | string | null;
+  transactionId: string | null;
+  paymentDate: string | null;
 }
 
 export type TechnicianBookingStatus =
@@ -46,6 +62,7 @@ export interface TechnicianBooking {
   problemDescription: string;
   status: string;
   paymentStatus: string;
+  paymentRequested: boolean;
   finalAmount?: number;
   service: Pick<Service, "title" | "basePrice"> | null;
 }

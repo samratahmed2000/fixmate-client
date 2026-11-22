@@ -29,7 +29,7 @@ export const menuItemsByRole: Record<Role, NavItem[]> = {
     },
     {
       id: "payments",
-      name: "Payments",
+      name: "Payment History",
       url: "/dashboard/customer/payments",
       icon: CreditCardIcon,
     },

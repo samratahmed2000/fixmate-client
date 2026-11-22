@@ -5,6 +5,7 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { bookingService } from "@/lib/actions/bookings";
+import { notifyDashboardDataUpdated } from "@/lib/dashboard/refresh";
 import { toast } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -52,6 +53,7 @@ const RepairBookingsForm = ({
 
     try {
       await bookingService(booking);
+      notifyDashboardDataUpdated();
       toast.add({
         title: "Repair request submitted",
         description: `Successfully booked ${service.title}.`,

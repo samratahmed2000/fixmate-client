@@ -58,7 +58,7 @@ const ServiceDetailsCard = ({
               name="title"
               placeholder="e.g. Washing Machine Repair"
               value={values.title}
-              maxLength={40}
+              maxLength={30}
               disabled={isSubmitting}
               aria-invalid={!!errors.title}
               onChange={(event) => updateField("title", event.target.value)}

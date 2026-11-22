@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { normalizeBookingStatus } from "@/app/components/bookings/BookingBadges";
 import {
-  handleTechnicianBookingPayment,
+  handleTechnicianPaymentRequest,
   handleTechnicianBookingStatus,
 } from "@/helper/bookings/handleTechnicianRequest";
 import type {
@@ -33,13 +33,14 @@ const TechnicianRequestActions = ({
   onBookingUpdated,
 }: TechnicianRequestActionsProps) => {
   const [isUpdating, setIsUpdating] = useState(false);
-  const [isSavingPayment, setIsSavingPayment] = useState(false);
+  const [isSendingPaymentRequest, setIsSendingPaymentRequest] = useState(false);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [finalAmount, setFinalAmount] = useState(
     String(booking.service?.basePrice ?? ""),
   );
   const status = normalizeBookingStatus(booking.status);
   const isUnpaid = booking.paymentStatus.toLowerCase() !== "paid";
+  const hasPaymentRequest = booking.paymentRequested === true;
 
   const updateStatus = (nextStatus: TechnicianBookingStatus) => {
     void handleTechnicianBookingStatus(
@@ -51,15 +52,15 @@ const TechnicianRequestActions = ({
     );
   };
 
-  const submitPayment = (event: React.FormEvent<HTMLFormElement>) => {
+  const submitPaymentRequest = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const amount = Number(finalAmount);
 
-    void handleTechnicianBookingPayment(
+    void handleTechnicianPaymentRequest(
       booking,
       amount,
-      isSavingPayment,
-      setIsSavingPayment,
+      isSendingPaymentRequest,
+      setIsSendingPaymentRequest,
       onBookingUpdated,
     ).then((saved) => {
       if (saved) setIsPaymentDialogOpen(false);
@@ -130,18 +131,29 @@ const TechnicianRequestActions = ({
           </Button>
         ) : null}
 
-        {status === "completed" && isUnpaid ? (
+        {status === "completed" && isUnpaid && !hasPaymentRequest ? (
           <Button
             type="button"
             size="sm"
             className={fullWidthButtonClassName}
             onClick={() => {
-              setFinalAmount(String(booking.service?.basePrice ?? ""));
+              setFinalAmount(
+                String(booking.finalAmount ?? booking.service?.basePrice ?? ""),
+              );
               setIsPaymentDialogOpen(true);
             }}
           >
-            Get Payment
+            Request Payment
           </Button>
+        ) : null}
+        {status === "completed" && isUnpaid && hasPaymentRequest ? (
+          <span
+            className={`text-sm text-muted-foreground ${
+              mobile ? "col-span-2 text-center" : ""
+            }`}
+          >
+            Requested
+          </span>
         ) : null}
 
         {status !== "requested" &&
@@ -161,16 +173,17 @@ const TechnicianRequestActions = ({
       <Dialog
         open={isPaymentDialogOpen}
         onOpenChange={(open) => {
-          if (!isSavingPayment) setIsPaymentDialogOpen(open);
+          if (!isSendingPaymentRequest) setIsPaymentDialogOpen(open);
         }}
       >
         <DialogContent>
-          <form onSubmit={submitPayment} className="space-y-5">
+          <form onSubmit={submitPaymentRequest} className="space-y-5">
             <DialogHeader>
-              <DialogTitle>Get Payment</DialogTitle>
+              <DialogTitle>Request Customer Payment</DialogTitle>
               <DialogDescription>
-                Enter the final amount paid by the customer for{" "}
-                {booking.service?.title || "this service"}.
+                Enter the final amount for{" "}
+                {booking.service?.title || "this service"}. The customer will
+                complete the payment through Stripe.
               </DialogDescription>
             </DialogHeader>
 
@@ -184,13 +197,13 @@ const TechnicianRequestActions = ({
               <Input
                 id={`final-amount-${booking._id}`}
                 type="number"
-                min="0"
+                min="0.01"
                 step="0.01"
                 inputMode="decimal"
                 required
                 value={finalAmount}
                 onChange={(event) => setFinalAmount(event.target.value)}
-                disabled={isSavingPayment}
+                disabled={isSendingPaymentRequest}
               />
             </div>
 
@@ -198,13 +211,15 @@ const TechnicianRequestActions = ({
               <Button
                 type="button"
                 variant="outline"
-                disabled={isSavingPayment}
+                disabled={isSendingPaymentRequest}
                 onClick={() => setIsPaymentDialogOpen(false)}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSavingPayment}>
-                {isSavingPayment ? "Saving..." : "Confirm Payment"}
+              <Button type="submit" disabled={isSendingPaymentRequest}>
+                {isSendingPaymentRequest
+                  ? "Sending Request..."
+                  : "Send Payment Request"}
               </Button>
             </DialogFooter>
           </form>

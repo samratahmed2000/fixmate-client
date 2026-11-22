@@ -4,6 +4,7 @@ import type {
   AdminBooking,
   AdminBookingStatusFilter,
   CustomerBooking,
+  CustomerPayment,
   TechnicianBooking,
   TechnicianBookingStatus,
 } from "@/types/bookings";
@@ -22,6 +23,8 @@ const isCustomerBooking = (value: unknown): value is CustomerBooking =>
   typeof value.serviceId === "string" &&
   typeof value.bookingDate === "string" &&
   typeof value.status === "string" &&
+  (value.paymentRequested === undefined ||
+    typeof value.paymentRequested === "boolean") &&
   (value.service === null || isRecord(value.service));
 
 const isTechnicianBooking = (value: unknown): value is TechnicianBooking =>
@@ -35,6 +38,8 @@ const isTechnicianBooking = (value: unknown): value is TechnicianBooking =>
   typeof value.problemDescription === "string" &&
   typeof value.status === "string" &&
   typeof value.paymentStatus === "string" &&
+  (value.paymentRequested === undefined ||
+    typeof value.paymentRequested === "boolean") &&
   (value.service === null ||
     (isRecord(value.service) && typeof value.service.title === "string"));
 
@@ -51,6 +56,79 @@ const isAdminBooking = (value: unknown): value is AdminBooking =>
   (value.amount === null ||
   typeof value.amount === "number" ||
   typeof value.amount === "string");
+
+const isCustomerPayment = (value: unknown): value is CustomerPayment =>
+  isRecord(value) &&
+  typeof value.id === "string" &&
+  typeof value.service === "string" &&
+  typeof value.title === "string" &&
+  typeof value.technicianName === "string" &&
+  (value.amount === null ||
+    typeof value.amount === "number" ||
+    typeof value.amount === "string") &&
+  (value.transactionId === null || typeof value.transactionId === "string") &&
+  (value.paymentDate === null || typeof value.paymentDate === "string");
+
+export const getCustomerPaymentHistory = async (): Promise<
+  CustomerPayment[]
+> => {
+  const res = await fetch("/api/payments", {
+    cache: "no-store",
+    credentials: "include",
+  });
+
+  let data: unknown;
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error("The server returned an invalid response");
+  }
+
+  if (!res.ok) {
+    throw new Error(getErrorMessage(data, "Failed to fetch payment history"));
+  }
+
+  if (!isRecord(data) || !Array.isArray(data.data)) {
+    throw new Error("The server returned an invalid payment history");
+  }
+
+  if (!data.data.every(isCustomerPayment)) {
+    throw new Error("The server returned invalid payment details");
+  }
+
+  return data.data;
+};
+
+export const createBookingCheckoutSession = async (bookingId: string) => {
+  const res = await fetch("/api/checkout_sessions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ bookingId }),
+    cache: "no-store",
+    credentials: "include",
+  });
+
+  let data: unknown;
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error("The server returned an invalid response");
+  }
+
+  if (!res.ok) {
+    throw new Error(getErrorMessage(data, "Unable to start payment"));
+  }
+
+  if (
+    !isRecord(data) ||
+    !isRecord(data.data) ||
+    typeof data.data.url !== "string"
+  ) {
+    throw new Error("The server returned an invalid checkout URL");
+  }
+
+  return data.data.url;
+};
 
 export const getAdminBookings = async (
   status: AdminBookingStatusFilter,
@@ -157,23 +235,29 @@ export const updateTechnicianBookingStatus = async (
   return { status: data.status };
 };
 
-export const markTechnicianBookingPaid = async (
+export const requestTechnicianBookingPayment = async (
   bookingId: string,
   finalAmount: number,
-): Promise<{ finalAmount: number; paymentStatus: string }> => {
+): Promise<{
+  finalAmount: number;
+  paymentStatus: string;
+  paymentRequested: boolean;
+}> => {
   const data = await updateTechnicianBooking(bookingId, "payment", {
     finalAmount,
   });
   if (
     typeof data.finalAmount !== "number" ||
-    typeof data.paymentStatus !== "string"
+    typeof data.paymentStatus !== "string" ||
+    data.paymentRequested !== true
   ) {
-    throw new Error("The server returned invalid payment details");
+    throw new Error("The server returned an invalid payment request");
   }
 
   return {
     finalAmount: data.finalAmount,
     paymentStatus: data.paymentStatus,
+    paymentRequested: data.paymentRequested,
   };
 };
 

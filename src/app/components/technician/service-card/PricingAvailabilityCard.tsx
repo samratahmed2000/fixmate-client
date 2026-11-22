@@ -99,7 +99,7 @@ const PricingAvailabilityCard = ({
               name="serviceArea"
               placeholder="e.g. Gulshan, Dhaka"
               value={values.serviceArea}
-              maxLength={40}
+              maxLength={30}
               disabled={isSubmitting}
               aria-invalid={!!errors.serviceArea}
               onChange={(event) =>

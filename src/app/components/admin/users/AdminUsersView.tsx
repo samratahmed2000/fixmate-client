@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/toast";
+import { notifyDashboardDataUpdated } from "@/lib/dashboard/refresh";
 import type { AdminUser } from "@/types/admin";
 import AdminUsersTable from "./AdminUsersTable";
 
@@ -69,6 +70,7 @@ const AdminUsersView = () => {
             : user,
         ),
       );
+      notifyDashboardDataUpdated();
       toast.add({
         title: "Application Approved",
         description: "The customer account is now a technician account.",

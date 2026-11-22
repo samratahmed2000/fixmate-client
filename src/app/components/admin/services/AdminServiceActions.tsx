@@ -4,6 +4,7 @@ import * as React from "react";
 import { CheckIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
+import { notifyDashboardDataUpdated } from "@/lib/dashboard/refresh";
 import type { Service } from "@/types/services";
 
 const AdminServiceActions = ({
@@ -35,6 +36,7 @@ const AdminServiceActions = ({
         description: result.message,
         type: "success",
       });
+      notifyDashboardDataUpdated();
       onUpdated();
     } catch (error) {
       toast.add({

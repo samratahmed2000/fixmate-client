@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import { toast } from "@/components/ui/toast";
+import { notifyDashboardDataUpdated } from "@/lib/dashboard/refresh";
 import { deleteService, toggleServiceStatus } from "@/lib/actions/services";
 import type { Service } from "@/types/services";
 
@@ -59,6 +60,7 @@ export const handleServiceDelete = async (
       description: result.message,
       type: "success",
     });
+    notifyDashboardDataUpdated();
     refresh();
     return true;
   } catch (error) {

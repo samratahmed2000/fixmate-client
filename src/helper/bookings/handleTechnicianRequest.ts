@@ -1,7 +1,8 @@
 import type { Dispatch, SetStateAction } from "react";
 import { toast } from "@/components/ui/toast";
+import { notifyDashboardDataUpdated } from "@/lib/dashboard/refresh";
 import {
-  markTechnicianBookingPaid,
+  requestTechnicianBookingPayment,
   updateTechnicianBookingStatus,
 } from "@/lib/actions/bookings";
 import type {
@@ -22,6 +23,7 @@ export const handleTechnicianBookingStatus = async (
 
   try {
     const result = await updateTechnicianBookingStatus(booking._id, status);
+    notifyDashboardDataUpdated();
     onBookingUpdated({ ...booking, status: result.status });
     toast.add({
       title: "Request updated",
@@ -40,7 +42,7 @@ export const handleTechnicianBookingStatus = async (
   }
 };
 
-export const handleTechnicianBookingPayment = async (
+export const handleTechnicianPaymentRequest = async (
   booking: TechnicianBooking,
   finalAmount: number,
   isSaving: boolean,
@@ -48,10 +50,10 @@ export const handleTechnicianBookingPayment = async (
   onBookingUpdated: (booking: TechnicianBooking) => void,
 ) => {
   if (isSaving) return false;
-  if (!Number.isFinite(finalAmount) || finalAmount < 0) {
+  if (!Number.isFinite(finalAmount) || finalAmount <= 0) {
     toast.add({
       title: "Invalid final amount",
-      description: "Enter a valid amount of zero or more.",
+      description: "Enter a valid amount greater than zero.",
       type: "error",
     });
     return false;
@@ -60,21 +62,25 @@ export const handleTechnicianBookingPayment = async (
   setIsSaving(true);
 
   try {
-    const result = await markTechnicianBookingPaid(booking._id, finalAmount);
+    const result = await requestTechnicianBookingPayment(
+      booking._id,
+      finalAmount,
+    );
     onBookingUpdated({
       ...booking,
       finalAmount: result.finalAmount,
       paymentStatus: result.paymentStatus,
+      paymentRequested: result.paymentRequested,
     });
     toast.add({
-      title: "Payment recorded",
-      description: `Final amount ৳${result.finalAmount} was recorded.`,
+      title: "Payment request sent",
+      description: `The customer can now pay ৳${result.finalAmount} through Stripe.`,
       type: "success",
     });
     return true;
   } catch (error) {
     toast.add({
-      title: "Could not record payment",
+      title: "Could not send payment request",
       description:
         error instanceof Error ? error.message : "Please try again.",
       type: "error",
