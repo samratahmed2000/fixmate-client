@@ -1,5 +1,9 @@
 import { signIn, signUp } from "@/lib/auth-client";
 import { toast } from "@/components/ui/toast";
+import {
+  getAuthHref,
+  getPostAuthDestination,
+} from "@/lib/navigation/redirect";
 import type * as React from "react";
 import type { AuthFormData } from "@/types/auth";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -11,6 +15,7 @@ export const handleSubmit = async (
   setErrors: React.Dispatch<React.SetStateAction<Record<string, string>>>,
   router?: AppRouterInstance,
   setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>,
+  redirect?: string,
 ) => {
   e.preventDefault();
 
@@ -87,7 +92,7 @@ export const handleSubmit = async (
         type: "success",
       });
 
-      router?.push("/sign-in");
+      router?.push(getAuthHref("/sign-in", redirect));
     } else {
       const res = await signIn.email({
         email: emailVal,
@@ -111,7 +116,15 @@ export const handleSubmit = async (
         type: "success",
       });
 
-      router?.push("/");
+      // Customers go back to where they were heading (e.g. the service page
+      // they were booking). Technicians and admins go to their own dashboard,
+      // so they still never land on the customer-only services pages.
+      const destination = getPostAuthDestination(
+        res.data?.user?.role,
+        redirect,
+      );
+
+      router?.push(destination);
       router?.refresh();
     }
   } catch (err) {

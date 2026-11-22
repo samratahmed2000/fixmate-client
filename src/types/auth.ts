@@ -10,6 +10,8 @@ export interface AuthFormData {
 export interface AuthFormProps {
   type: "sign-up" | "sign-in";
   className?: string;
+  /** Internal path to return to after a successful sign-in. */
+  redirect?: string;
 }
 
 export type FormInputProps = AuthFormProps;

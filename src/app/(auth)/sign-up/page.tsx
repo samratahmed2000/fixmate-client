@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import Logo from "@/app/components/shared/Logo";
 import AuthForm from "@/app/components/auth/AuthForm";
+import { getSafeRedirect } from "@/lib/navigation/redirect";
 import {
   Card,
   CardContent,
@@ -12,7 +13,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const SignUpPage = () => {
+const SignUpPage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ redirect?: string | string[] }>;
+}) => {
+  const { redirect } = await searchParams;
+  const redirectTo = getSafeRedirect(redirect);
+
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center bg-muted/20 px-4 py-12 sm:px-6 lg:px-8">
       {/* Top Left: Back to Home Button */}
@@ -53,7 +61,10 @@ const SignUpPage = () => {
           </CardHeader>
 
           <CardContent className="pt-2">
-            <AuthForm type="sign-up" />
+            <AuthForm
+              type="sign-up"
+              redirect={redirectTo === "/" ? undefined : redirectTo}
+            />
           </CardContent>
         </Card>
       </div>

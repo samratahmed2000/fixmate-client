@@ -28,7 +28,7 @@ const CategoryCard = ({ category }: { category: Category }) => {
 
   return (
     <Link
-      href={`/services?category=${category.slug}`}
+      href={`/services?category=${encodeURIComponent(category.slug)}`}
       className="group block h-full rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
       <Card className="h-full border-border py-0 bg-background transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-sm">

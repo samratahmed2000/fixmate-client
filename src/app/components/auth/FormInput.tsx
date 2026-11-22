@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/field";
 import PasswordStrengthBar from "./PasswordStrengthBar";
 
-const FormInput = ({ type }: AuthFormProps) => {
+const FormInput = ({ type, redirect }: AuthFormProps) => {
   const router = useRouter();
   const isSignUp = type === "sign-up";
   const [showPassword, setShowPassword] = React.useState(false);
@@ -35,7 +35,15 @@ const FormInput = ({ type }: AuthFormProps) => {
   return (
     <form
       onSubmit={(e) =>
-        handleSubmit(e, type, formData, setErrors, router, setIsLoading)
+        handleSubmit(
+          e,
+          type,
+          formData,
+          setErrors,
+          router,
+          setIsLoading,
+          redirect,
+        )
       }
       noValidate
       className="space-y-4"

@@ -7,11 +7,35 @@ import { getAllServices } from "@/lib/api/services";
 import { WrenchIcon } from "lucide-react";
 import { requireCustomerAccess } from "@/lib/core/server";
 import { isServiceAvailable } from "@/lib/services/availability";
+import getCategories from "@/lib/api/getCategories";
+import type { Category } from "@/types/category";
+import ServicesExplorer from "@/app/components/services/ServicesExplorer";
 
-const ServicesList = async () => {
+interface ServiceQueryParams {
+  search: string;
+  categories: string[];
+  modes: string[];
+  sort: string;
+}
+
+const firstParam = (value: string | string[] | undefined) =>
+  Array.isArray(value) ? value[0] : value;
+
+const splitParam = (value: string | string[] | undefined) =>
+  (Array.isArray(value) ? value : value?.split(","))
+    ?.flatMap((item) => item.split(","))
+    .map((item) => item.trim())
+    .filter(Boolean) ?? [];
+
+const ServicesList = async ({ query }: { query: ServiceQueryParams }) => {
   let allServices: Awaited<ReturnType<typeof getAllServices>>;
   try {
-    allServices = await getAllServices();
+    allServices = await getAllServices({
+      search: query.search,
+      category: query.categories,
+      mode: query.modes,
+      sort: query.sort,
+    });
   } catch (error) {
     console.error("Failed to load available services:", error);
 
@@ -95,8 +119,45 @@ const ServicesSkeleton = () => (
   </>
 );
 
-const ServicesPage = async () => {
+const ServicesPage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    search?: string | string[];
+    category?: string | string[];
+    mode?: string | string[];
+    sort?: string | string[];
+  }>;
+}) => {
   await requireCustomerAccess();
+  const params = await searchParams;
+  const search = firstParam(params.search)?.trim() ?? "";
+  const categories = splitParam(params.category);
+  const modes = splitParam(params.mode);
+  const requestedSort = firstParam(params.sort) ?? "";
+  const sort = ["price-asc", "price-desc", "newest"].includes(requestedSort)
+    ? requestedSort
+    : "";
+
+  let categoryResponse: Awaited<ReturnType<typeof getCategories>>;
+  try {
+    categoryResponse = await getCategories();
+  } catch {
+    categoryResponse = { data: [] };
+  }
+  const categoryOptions: Category[] = Array.isArray(categoryResponse)
+    ? categoryResponse
+    : Array.isArray(categoryResponse?.data)
+      ? categoryResponse.data
+      : [];
+  const normalizedCategories = categories.map((category) => {
+    const match = categoryOptions.find(
+      (option) =>
+        option.slug.toLowerCase() === category.toLowerCase() ||
+        option.title.toLowerCase() === category.toLowerCase(),
+    );
+    return match?.slug ?? category;
+  });
 
   return (
     <section className="mx-auto w-full max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
@@ -110,11 +171,19 @@ const ServicesPage = async () => {
         </p>
       </header>
 
-      <div className="space-y-5">
+      <ServicesExplorer
+        categories={categoryOptions}
+        search={search}
+        selectedCategories={normalizedCategories}
+        selectedModes={modes}
+        sort={sort}
+      >
         <Suspense fallback={<ServicesSkeleton />}>
-          <ServicesList />
+          <ServicesList
+            query={{ search, categories: normalizedCategories, modes, sort }}
+          />
         </Suspense>
-      </div>
+      </ServicesExplorer>
     </section>
   );
 };

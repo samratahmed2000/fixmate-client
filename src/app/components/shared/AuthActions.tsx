@@ -1,14 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "@/lib/auth-client";
+import { getAuthHref } from "@/lib/navigation/redirect";
 import UserMenu from "./UserMenu";
 import { AuthActionsProps } from "@/types/navigation";
 
 const AuthActions = ({ variant = "desktop", onNavigate }: AuthActionsProps) => {
   const { data: session, isPending } = useSession();
+  const pathname = usePathname();
+  const signInHref = getAuthHref("/sign-in", pathname);
+  const signUpHref = getAuthHref("/sign-up", pathname);
 
   if (isPending) {
     return <Skeleton className="size-10 rounded-full" />;
@@ -28,14 +33,14 @@ const AuthActions = ({ variant = "desktop", onNavigate }: AuthActionsProps) => {
     return (
       <>
         <Link
-          href="/sign-in"
+          href={signInHref}
           onClick={onNavigate}
           className={buttonVariants({ variant: "outline", size: "lg" })}
         >
           Sign In
         </Link>
         <Link
-          href="/sign-up"
+          href={signUpHref}
           onClick={onNavigate}
           className={buttonVariants({ size: "lg" })}
         >
@@ -48,12 +53,12 @@ const AuthActions = ({ variant = "desktop", onNavigate }: AuthActionsProps) => {
   return (
     <div className="hidden items-center gap-2 md:flex">
       <Link
-        href="/sign-in"
+        href={signInHref}
         className={buttonVariants({ variant: "ghost", size: "lg" })}
       >
         Sign In
       </Link>
-      <Link href="/sign-up" className={buttonVariants({ size: "lg" })}>
+      <Link href={signUpHref} className={buttonVariants({ size: "lg" })}>
         Sign Up
       </Link>
     </div>

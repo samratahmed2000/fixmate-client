@@ -2,14 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { handleGoogleSignIn } from "@/helper/auth/handleGoogleSignIn";
+import type { AuthFormProps } from "@/types/auth";
 
-const GoogleButton = () => {
+const GoogleButton = ({ redirect }: Pick<AuthFormProps, "redirect">) => {
   return (
     <Button
       type="button"
       variant="outline"
       className="w-full h-10 gap-2.5 font-medium cursor-pointer"
-      onClick={handleGoogleSignIn}
+      onClick={() => handleGoogleSignIn(redirect)}
     >
       <svg className="size-4 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
         <path

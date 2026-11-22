@@ -7,20 +7,20 @@ import GoogleButton from "./GoogleButton";
 import FormInput from "./FormInput";
 import AuthLink from "./AuthLink";
 
-const AuthForm = ({ type, className }: AuthFormProps) => {
+const AuthForm = ({ type, className, redirect }: AuthFormProps) => {
   return (
     <div className={cn("w-full space-y-5", className)}>
       {/* Form Inputs & Submit */}
-      <FormInput type={type} />
+      <FormInput type={type} redirect={redirect} />
 
       {/* Separator */}
       <FieldSeparator className="my-3">Or</FieldSeparator>
 
       {/* Social login: Google button */}
-      <GoogleButton />
+      <GoogleButton redirect={redirect} />
 
       {/* Link up with other auth page */}
-      <AuthLink type={type} />
+      <AuthLink type={type} redirect={redirect} />
     </div>
   );
 };

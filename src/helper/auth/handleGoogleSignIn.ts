@@ -1,13 +1,20 @@
 import { signIn } from "@/lib/auth-client";
 import { toast } from "@/components/ui/toast";
+import { getSafeRedirect } from "@/lib/navigation/redirect";
 
-export const handleGoogleSignIn = async () => {
+export const handleGoogleSignIn = async (redirect?: string) => {
   try {
     // On success better-auth redirects the browser to Google, so there is
     // nothing to await beyond the response.
+    const safeRedirect = getSafeRedirect(redirect);
+    const completeUrl =
+      safeRedirect === "/"
+        ? "/api/auth/complete"
+        : `/api/auth/complete?redirect=${encodeURIComponent(safeRedirect)}`;
+
     const { error } = await signIn.social({
       provider: "google",
-      callbackURL: "/",
+      callbackURL: completeUrl,
     });
 
     if (error) {

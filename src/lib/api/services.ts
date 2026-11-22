@@ -1,15 +1,34 @@
 import { Service } from "@/types/services";
 import { baseUrl } from "../utils";
 
+export interface ServiceQuery {
+  search?: string;
+  category?: string[];
+  mode?: string[];
+  sort?: string;
+}
+
 // All Services
-export const getAllServices = async (): Promise<Service[]> => {
+export const getAllServices = async (
+  query: ServiceQuery = {},
+): Promise<Service[]> => {
   if (!baseUrl) {
     throw new Error("BASE_URL is not configured");
   }
 
-  const res = await fetch(`${baseUrl}/api/services`, {
-    cache: "no-store",
-  });
+  const params = new URLSearchParams();
+  if (query.search) params.set("search", query.search);
+  if (query.category?.length) params.set("category", query.category.join(","));
+  if (query.mode?.length) params.set("mode", query.mode.join(","));
+  if (query.sort) params.set("sort", query.sort);
+
+  const queryString = params.toString();
+  const res = await fetch(
+    `${baseUrl}/api/services${queryString ? `?${queryString}` : ""}`,
+    {
+      cache: "no-store",
+    },
+  );
 
   if (!res.ok) {
     throw new Error("Failed to fetch services");

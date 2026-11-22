@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { useSession } from "@/lib/auth-client";
 import { hasActiveServiceBooking } from "@/lib/actions/bookings";
+import { getAuthHref } from "@/lib/navigation/redirect";
 import { toast } from "@/components/ui/toast";
 import type { Service } from "@/types/services";
 import RepairBookingsForm from "@/app/components/bookings/RepairBookingsForm";
@@ -83,8 +84,17 @@ const RequestRepairCard = ({ service }: { service: Service }) => {
   const openRequestForm = () => {
     if (isPending) return;
 
-    if (session?.user.role !== "customer") {
-      router.push("/sign-in");
+    // Guests sign in first, then come straight back to this service page.
+    if (!session?.user) {
+      const currentUrl =
+        `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      router.push(getAuthHref("/sign-in", currentUrl));
+      return;
+    }
+
+    // Technicians and admins never use the customer booking flow.
+    if (session.user.role !== "customer") {
+      router.push(`/dashboard/${session.user.role}`);
       return;
     }
 

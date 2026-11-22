@@ -86,7 +86,7 @@ const Footer = async () => {
                 {categories.map((category) => (
                   <li key={category._id}>
                     <Link
-                      href={`/services?category=${category.slug}`}
+                      href={`/services?category=${encodeURIComponent(category.slug)}`}
                       className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
                       {category.title}
