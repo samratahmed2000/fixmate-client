@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
+import { getAuthBaseURL, getTrustedOrigins } from "./auth-origins";
 
 const client = new MongoClient(process.env.MONGODB_URI as string);
 const db = client.db("fixMate");
@@ -8,6 +9,9 @@ const db = client.db("fixMate");
 export { client as mongoClient };
 
 export const auth = betterAuth({
+  baseURL: getAuthBaseURL(),
+  trustedOrigins: getTrustedOrigins(),
+
   database: mongodbAdapter(db, {
     client,
   }),
