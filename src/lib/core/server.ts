@@ -35,3 +35,20 @@ export const requireAdminAccess = async () => {
     redirect(`/dashboard/${role ?? "customer"}`);
   }
 };
+
+export const requireDashboardRole = async (
+  requiredRole: "customer" | "technician" | "admin",
+) => {
+  const session = await getSession();
+  const role = session?.user.role;
+
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
+
+  if (role !== requiredRole) {
+    redirect(`/dashboard/${role ?? "customer"}`);
+  }
+
+  return session.user;
+};

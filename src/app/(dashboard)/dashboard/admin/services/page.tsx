@@ -7,7 +7,6 @@ const AdminServicesViewPage = async () => {
   return (
     <section className="space-y-5">
       <header className="space-y-1">
-        <p className="text-sm font-medium text-primary">Administration</p>
         <h1 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">
           Services Approval
         </h1>

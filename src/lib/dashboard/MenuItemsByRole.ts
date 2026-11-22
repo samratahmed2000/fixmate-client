@@ -23,7 +23,7 @@ export const menuItemsByRole: Record<Role, NavItem[]> = {
     },
     {
       id: "bookings",
-      name: "Bookings",
+      name: "My Bookings",
       url: "/dashboard/customer/bookings",
       icon: CalendarCheckIcon,
     },
@@ -56,7 +56,7 @@ export const menuItemsByRole: Record<Role, NavItem[]> = {
     },
     {
       id: "requests",
-      name: "Requests",
+      name: "Manage Requests",
       url: "/dashboard/technician/requests",
       icon: ClipboardListIcon,
     },
@@ -71,19 +71,19 @@ export const menuItemsByRole: Record<Role, NavItem[]> = {
     },
     {
       id: "users",
-      name: "Users",
+      name: "Manage Users",
       url: "/dashboard/admin/users",
       icon: UsersIcon,
     },
     {
       id: "services",
-      name: "Services",
+      name: "Service Approval",
       url: "/dashboard/admin/services",
       icon: LayersIcon,
     },
     {
       id: "bookings",
-      name: "Bookings",
+      name: "All Bookings",
       url: "/dashboard/admin/bookings",
       icon: CalendarRangeIcon,
     },
