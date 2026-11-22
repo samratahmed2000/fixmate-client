@@ -22,3 +22,16 @@ export const requireCustomerAccess = async () => {
     redirect("/dashboard/admin");
   }
 };
+
+export const requireAdminAccess = async () => {
+  const session = await getSession();
+  const role = session?.user.role;
+
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
+
+  if (role !== "admin") {
+    redirect(`/dashboard/${role ?? "customer"}`);
+  }
+};
