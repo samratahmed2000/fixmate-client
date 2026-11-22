@@ -13,6 +13,7 @@ import {
 import RequestRepairCard from "@/app/components/services/RequestRepairCard";
 import ServiceInfoCard from "@/app/components/services/ServiceInfoCard";
 import { requireCustomerAccess } from "@/lib/core/server";
+import { isServiceAvailable } from "@/lib/services/availability";
 
 const ServiceDetailsPage = async ({
   params,
@@ -29,7 +30,7 @@ const ServiceDetailsPage = async ({
 
   const service = await getServiceById(id);
 
-  if (!service) {
+  if (!service || !isServiceAvailable(service)) {
     notFound();
   }
 

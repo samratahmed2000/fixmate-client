@@ -6,9 +6,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getAllServices } from "@/lib/api/services";
 import { WrenchIcon } from "lucide-react";
 import { requireCustomerAccess } from "@/lib/core/server";
+import { isServiceAvailable } from "@/lib/services/availability";
 
 const ServicesList = async () => {
-  const services = await getAllServices();
+  const allServices = await getAllServices();
+  const services = allServices.filter(isServiceAvailable);
 
   return (
     <>

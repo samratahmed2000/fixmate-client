@@ -29,3 +29,23 @@ export interface CustomerBooking {
     "title" | "serviceImage" | "technicianName" | "basePrice"
   > | null;
 }
+
+export type TechnicianBookingStatus =
+  | "accepted"
+  | "rejected"
+  | "in-progress"
+  | "completed";
+
+export interface TechnicianBooking {
+  _id: string;
+  serviceId: string;
+  customerName: string;
+  phone: string;
+  address: string;
+  bookingDate: string;
+  problemDescription: string;
+  status: string;
+  paymentStatus: string;
+  finalAmount?: number;
+  service: Pick<Service, "title" | "basePrice"> | null;
+}
