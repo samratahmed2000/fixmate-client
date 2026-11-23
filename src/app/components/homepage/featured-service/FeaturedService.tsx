@@ -8,12 +8,14 @@ import type { Service } from "@/types/services";
 
 const FeaturedService = async () => {
   let services: Service[] = [];
+  let hasError = false;
 
   try {
     const allServices = await getFeaturedServices(6);
     services = allServices.filter(isServiceAvailable).slice(0, 6);
   } catch (error) {
     console.error("Failed to load featured services:", error);
+    hasError = true;
   }
 
   return (
@@ -55,7 +57,9 @@ const FeaturedService = async () => {
         ) : (
           <Card className="mt-10 border-dashed">
             <CardContent className="py-10 text-center text-sm text-muted-foreground">
-              Featured services are temporarily unavailable.
+              {hasError
+                ? "Featured services are temporarily unavailable. Please try again later."
+                : "No featured services are available yet. Please check back soon."}
             </CardContent>
           </Card>
         )}

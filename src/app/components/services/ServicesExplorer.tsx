@@ -192,6 +192,11 @@ const ServicesExplorer = ({
                 {category.title}
               </label>
             ))}
+            {categories.length === 0 ? (
+              <p className="text-xs text-muted-foreground">
+                No service categories are available.
+              </p>
+            ) : null}
           </fieldset>
 
           <fieldset className="mt-5 space-y-3 border-t pt-4">

@@ -2,6 +2,7 @@ import getCategories from "@/lib/api/getCategories";
 import { Category } from "@/types/category";
 import CategoryCard from "./CategoryCard";
 import { LayoutGrid } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 const PopularCategories = async () => {
   const categories = await getCategories();
@@ -32,13 +33,21 @@ const PopularCategories = async () => {
           </p>
         </div>
 
-        <ul className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5 sm:gap-5 lg:mt-12 lg:grid-cols-7 lg:gap-6">
-          {allData.map((category) => (
-            <li key={category._id} className="h-full">
-              <CategoryCard category={category} />
-            </li>
-          ))}
-        </ul>
+        {allData.length > 0 ? (
+          <ul className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5 sm:gap-5 lg:mt-12 lg:grid-cols-7 lg:gap-6">
+            {allData.map((category) => (
+              <li key={category._id} className="h-full">
+                <CategoryCard category={category} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <Card className="mt-10 border-dashed">
+            <CardContent className="py-10 text-center text-sm text-muted-foreground">
+              No service categories are available yet. Please check back soon.
+            </CardContent>
+          </Card>
+        )}
       </div>
     </section>
   );

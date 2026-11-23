@@ -83,16 +83,22 @@ const Footer = async () => {
                 Popular Category
               </h2>
               <ul className="mt-4 space-y-3">
-                {categories.map((category) => (
-                  <li key={category._id}>
-                    <Link
-                      href={`/services?category=${encodeURIComponent(category.slug)}`}
-                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      {category.title}
-                    </Link>
+                {categories.length > 0 ? (
+                  categories.map((category) => (
+                    <li key={category._id}>
+                      <Link
+                        href={`/services?category=${encodeURIComponent(category.slug)}`}
+                        className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        {category.title}
+                      </Link>
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-sm text-muted-foreground">
+                    No categories available
                   </li>
-                ))}
+                )}
               </ul>
             </nav>
           </div>

@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import ServicesCard from "@/app/components/services/ServicesCard";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -82,11 +83,23 @@ const ServicesList = async ({ query }: { query: ServiceQueryParams }) => {
               <WrenchIcon className="size-6" />
             </span>
             <h2 className="font-heading text-lg font-semibold">
-              No services available yet
+              {query.search || query.categories.length || query.modes.length
+                ? "No matching services found"
+                : "No services available yet"}
             </h2>
             <p className="max-w-sm text-sm text-muted-foreground">
-              Please check back later to find available repair services.
+              {query.search || query.categories.length || query.modes.length
+                ? "Try changing your search or filters to find available repair services."
+                : "Please check back later to find available repair services."}
             </p>
+            {query.search || query.categories.length || query.modes.length ? (
+              <Link
+                href="/services"
+                className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+              >
+                Clear filters
+              </Link>
+            ) : null}
           </CardContent>
         </Card>
       )}
