@@ -1,5 +1,6 @@
 import { Service } from "@/types/services";
 import { baseUrl } from "../utils";
+import { serverApiFetch } from "./server-fetch";
 
 export interface ServiceQuery {
   search?: string;
@@ -27,12 +28,10 @@ export const getAllServices = async (
   if (query.includePending) params.set("includePending", "true");
 
   const queryString = params.toString();
-  const res = await fetch(
-    `${baseUrl}/api/services${queryString ? `?${queryString}` : ""}`,
-    {
-      cache: "no-store",
-    },
-  );
+  const url = `${baseUrl}/api/services${queryString ? `?${queryString}` : ""}`;
+  const res = query.includePending
+    ? await serverApiFetch(url, { cache: "no-store" })
+    : await fetch(url, { cache: "no-store" });
 
   if (!res.ok) {
     throw new Error("Failed to fetch services");

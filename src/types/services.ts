@@ -29,6 +29,19 @@ export interface Service {
   createdAt?: string;
 }
 
+/** Fields a technician is allowed to submit; everything else is server-owned. */
+export type ServiceInput = Pick<
+  Service,
+  | "title"
+  | "category"
+  | "description"
+  | "basePrice"
+  | "estimatedDuration"
+  | "serviceMode"
+  | "serviceArea"
+  | "serviceImage"
+>;
+
 export type InsertedService = {
   acknowledged: boolean;
   insertedId: string;
@@ -57,7 +70,7 @@ export interface ServiceFormProps {
   technicianEmail?: string;
   submitButtonText?: string;
   onSuccess?: () => void;
-  onSubmit?: (service: Service) => Promise<unknown>;
+  onSubmit?: (service: ServiceInput) => Promise<unknown>;
 }
 
 export interface DurationFieldProps {
@@ -85,13 +98,10 @@ export interface ServiceSubmitOptions {
   serviceId?: string;
   values: ServiceFormValues;
   existingImageUrl?: string;
-  technicianName: string;
-  technicianEmail: string;
-  technicianId?: string;
   setErrors: React.Dispatch<React.SetStateAction<ServiceFormErrors>>;
   setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
   router?: { push: (url: string) => void; refresh?: () => void };
-  onSubmit?: (service: Service) => Promise<unknown>;
+  onSubmit?: (service: ServiceInput) => Promise<unknown>;
   onSuccess?: () => void;
 }
 

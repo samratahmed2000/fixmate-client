@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { requireAdminAccess } from "@/lib/core/server";
 import { formatCurrency } from "@/lib/bookings/bookings";
-import { getAdminPaymentTransactions } from "@/lib/stripe-payments";
+import { getAdminPaymentTransactions } from "@/lib/api/payments";
 
 const AdminTransactionsPage = async () => {
   await requireAdminAccess();

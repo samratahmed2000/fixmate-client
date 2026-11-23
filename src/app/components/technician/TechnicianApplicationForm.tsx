@@ -19,6 +19,7 @@ import SelectField from "@/app/components/shared/SelectField";
 import type { Category } from "@/types/category";
 import type { TechnicianApplication } from "@/types/admin";
 import type { SelectOption } from "@/lib/services/service-options";
+import { baseUrl } from "@/lib/utils";
 
 type Props = {
   name: string;
@@ -45,7 +46,7 @@ const TechnicianApplicationForm = ({ name, email, categories }: Props) => {
   React.useEffect(() => {
     let isCurrent = true;
 
-    fetch("/api/technician-applications", { cache: "no-store" })
+    fetch(`${baseUrl}/api/technician-applications`, { cache: "no-store" })
       .then(async (response) => {
         const result = await response.json();
         if (!response.ok) {
@@ -81,7 +82,7 @@ const TechnicianApplicationForm = ({ name, email, categories }: Props) => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/technician-applications", {
+      const response = await fetch(`${baseUrl}/api/technician-applications`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ category, serviceArea, bio }),

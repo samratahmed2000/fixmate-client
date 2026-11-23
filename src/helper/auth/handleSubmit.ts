@@ -110,6 +110,16 @@ export const handleSubmit = async (
         return;
       }
 
+      const tokenResponse = await fetch("/api/auth/token", {
+        method: "POST",
+        cache: "no-store",
+      });
+      if (!tokenResponse.ok) {
+        throw new Error(
+          "Could not establish a secure session. Please try again.",
+        );
+      }
+
       toast.add({
         title: "Welcome Back!",
         description: "You have signed in successfully.",

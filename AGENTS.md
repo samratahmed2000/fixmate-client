@@ -24,18 +24,18 @@ Next.js 16.4.6 App Router + React 19.3 client for a device/appliance repair plat
 
 ## Backend dependency
 
-- Data comes from the sibling repo `../fixmate-server` (Express + MongoDB, `npm run dev` there, default port 8000). It must be running for most pages to render.
-- `baseUrl` in `src/lib/utils.ts` comes from `NEXT_PUBLIC_API_URL` (no fallback). In the browser it resolves to `<origin>/api/proxy`, a same-origin rewrite in `next.config.ts` that forwards to the API (destination also built from `NEXT_PUBLIC_API_URL`). That proxy is required: the better-auth session cookie is host-only, so a direct cross-site call to the API drops the cookie and every protected endpoint answers 401 (it only works on `localhost`, where 3000 and 8000 share a host and cookies ignore ports). Server components use the API origin directly.
-- The proxy prefix must stay `/api/proxy/*`; a generic `/api/:path*` rewrite runs before dynamic routes and would shadow `/api/auth/[...all]`.
-- `src/lib/api/getCategories.ts` is the only API client. It throws when the API is down, and `Footer` + `PopularCategories` are server components that `await` it — so `/`, `/about`, `/services` 500 without the backend. The list endpoints return `{ success, message, data }`, and callers already unwrap `data` with an `Array.isArray` fallback.
+- All application data and business logic, including Better Auth persistence, lives in the sibling `../fixmate-server` repo (Express + MongoDB, `npm run dev` there, default port 8000). It must be running for most pages to render.
+- `baseUrl` in `src/lib/utils.ts` comes from `NEXT_PUBLIC_API_URL` (no fallback). In the browser it resolves to `<origin>/api/proxy`, a same-origin rewrite in `next.config.ts`; `src/proxy.ts` refreshes the HttpOnly JWT and forwards it as `Authorization: Bearer ...`. Server components use `serverApiFetch` to call the API origin with the verified token.
+- Keep both rewrites: `/api/auth/*` forwards Better Auth requests to Express, while `/api/proxy/*` forwards application API calls. Do not add a generic `/api/:path*` rewrite.
+- API clients live in `src/lib/api/`. `getCategories.ts` throws when the API is down, and `Footer` + `PopularCategories` are server components that `await` it — so `/`, `/about`, `/services` 500 without the backend. The list endpoints return `{ success, message, data }`, and callers already unwrap `data` with an `Array.isArray` fallback.
 - Server fetches use `next: { revalidate: 60 }`, so pages build as static with a 1-minute revalidate: fresh API data is not visible immediately in dev/prod.
 
 ## Auth
 
-- `src/lib/auth.ts` — server-only better-auth config: MongoDB adapter (`fixMate` db), email/password, Google, and additional user fields `role` (`customer | technician | admin`, default `customer`), `phone`, `area`, `bio`.
-- `src/lib/auth-client.ts` — client entrypoint exporting `signIn`, `signUp`, `signOut`, `useSession`. Import this (never `@/lib/auth`) from client components; `auth.ts` constructs a `MongoClient` at module load.
-- `src/app/api/auth/[...all]/route.ts` (better-auth `toNextJsHandler`) must stay for the client to work. It calls `mongoClient.connect()` before every request on purpose: the MongoDB driver permanently closes its topology after a failed initial connect (e.g. the DB was briefly unreachable while `next dev` started), which otherwise makes every auth request 500 with `MongoTopologyClosedError` until the server restarts.
-- Env (`.env*`, gitignored): `MONGODB_URI`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`. Google OAuth needs `http://localhost:3000/api/auth/callback/google` registered as an authorized redirect URI in the Google console. If the Google vars are missing, the build warns "Social provider google is missing clientId or clientSecret" and Google sign-in fails.
+- Better Auth is configured and served by `../fixmate-server/src/config/auth.js`; MongoDB credentials and auth secrets belong only in the backend `.env`. Google OAuth uses the frontend origin for its callback, e.g. `http://localhost:3000/api/auth/callback/google`.
+- `src/lib/auth-client.ts` is the browser entrypoint for `signIn`, `signUp`, `signOut`, and `useSession`; it calls the backend through the `/api/auth/*` rewrite.
+- `src/lib/auth/server-session.ts` obtains the session and JWT from Express for server-side page guards. The client repo must not connect to MongoDB or contain Stripe/database business logic.
+- Client `.env` only needs `NEXT_PUBLIC_API_URL`; keep `MONGODB_URI`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, and Google OAuth credentials in the backend environment.
 - `/sign-in` and `/sign-up` live in the `(auth)` route group, which has no layout — each page renders its own full-screen shell, and they do not get the `(root)` Navbar/Footer.
 
 ## Structure and conventions

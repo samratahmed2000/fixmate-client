@@ -1,13 +1,8 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getServerAuthContext } from "@/lib/auth/server-session";
 import { redirect } from "next/navigation";
 
 export const getSession = async () => {
-  "use server";
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  return session;
+  return (await getServerAuthContext())?.session ?? null;
 };
 
 export const requireCustomerAccess = async () => {

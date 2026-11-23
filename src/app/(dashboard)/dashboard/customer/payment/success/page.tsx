@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { requireDashboardRole } from "@/lib/core/server";
-import { confirmStripeCheckout } from "@/lib/stripe-payments";
+import { confirmStripeCheckout } from "@/lib/api/payments";
 import { cn } from "@/lib/utils";
 
 const PaymentSuccessPage = async ({
@@ -17,7 +17,7 @@ const PaymentSuccessPage = async ({
 }: {
   searchParams: Promise<{ session_id?: string | string[] }>;
 }) => {
-  const customer = await requireDashboardRole("customer");
+  await requireDashboardRole("customer");
   const { session_id: sessionIdParam } = await searchParams;
   const sessionId = Array.isArray(sessionIdParam)
     ? sessionIdParam[0]
@@ -30,7 +30,7 @@ const PaymentSuccessPage = async ({
 
   if (sessionId) {
     try {
-      payment = await confirmStripeCheckout(sessionId, customer.id);
+      payment = await confirmStripeCheckout(sessionId);
     } catch (error) {
       console.error("Could not confirm Stripe checkout:", error);
       errorMessage =

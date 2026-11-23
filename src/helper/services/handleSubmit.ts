@@ -3,7 +3,7 @@ import { toast } from "@/components/ui/toast";
 import { addNewService, updateService } from "@/lib/actions/services";
 import { notifyDashboardDataUpdated } from "@/lib/dashboard/refresh";
 import { imageUpload } from "@/lib/actions/upload";
-import type { Service, ServiceSubmitOptions } from "@/types/services";
+import type { ServiceInput, ServiceSubmitOptions } from "@/types/services";
 import { validateServiceForm } from "./handleServiceForm";
 
 export type { ServiceSubmitOptions };
@@ -15,9 +15,6 @@ export const handleSubmit = async (
     serviceId,
     values,
     existingImageUrl,
-    technicianName,
-    technicianEmail,
-    technicianId,
     setErrors,
     setIsSubmitting,
     router,
@@ -64,7 +61,7 @@ export const handleSubmit = async (
       throw new Error("A service image is required.");
     }
 
-    const serviceData: Service = {
+    const serviceData: ServiceInput = {
       title: values.title.trim(),
       category: values.category,
       description: values.description.trim(),
@@ -73,11 +70,6 @@ export const handleSubmit = async (
       serviceMode: values.serviceMode,
       serviceArea: values.serviceArea.trim(),
       serviceImage: finalImageUrl,
-      technicianName,
-      technicianEmail,
-      technicianId,
-      approvalStatus: "Pending",
-      ...(isUpdate ? {} : { isActive: true, availability: "Active" }),
     };
 
     if (onSubmit) {

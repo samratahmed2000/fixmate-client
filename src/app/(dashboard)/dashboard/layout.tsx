@@ -6,6 +6,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getSession } from "@/lib/core/server";
 import { isRole } from "@/lib/dashboard/MenuItemsByRole";
 import type { DashboardUser } from "@/types/dashboard";
+import { getAuthHref } from "@/lib/navigation/redirect";
+import { redirect } from "next/navigation";
 
 async function HeaderWithUser() {
   const session = await getSession();
@@ -51,7 +53,16 @@ function SidebarFallback() {
   );
 }
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await getSession();
+  if (!session?.user) {
+    redirect(getAuthHref("/sign-in", "/dashboard"));
+  }
+
   return (
     <SidebarProvider>
       <div className="flex h-svh w-full flex-col overflow-hidden">

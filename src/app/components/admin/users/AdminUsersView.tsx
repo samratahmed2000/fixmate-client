@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/toast";
 import { notifyDashboardDataUpdated } from "@/lib/dashboard/refresh";
+import { baseUrl } from "@/lib/utils";
 import type { AdminUser } from "@/types/admin";
 import AdminUsersTable from "./AdminUsersTable";
 
@@ -20,7 +21,7 @@ const AdminUsersView = () => {
   React.useEffect(() => {
     let isCurrent = true;
 
-    fetch("/api/admin/users", { cache: "no-store" })
+    fetch(`${baseUrl}/api/admin/users`, { cache: "no-store" })
       .then(async (response) => {
         const result = await response.json();
         if (!response.ok) {
@@ -47,7 +48,7 @@ const AdminUsersView = () => {
   const handleApprove = async (userId: string) => {
     setApprovingUserId(userId);
     try {
-      const response = await fetch("/api/admin/users", {
+      const response = await fetch(`${baseUrl}/api/admin/users`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: userId }),

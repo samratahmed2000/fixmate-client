@@ -72,7 +72,7 @@ const isCustomerPayment = (value: unknown): value is CustomerPayment =>
 export const getCustomerPaymentHistory = async (): Promise<
   CustomerPayment[]
 > => {
-  const res = await fetch("/api/payments", {
+  const res = await fetch(`${baseUrl}/api/payments`, {
     cache: "no-store",
     credentials: "include",
   });
@@ -100,7 +100,7 @@ export const getCustomerPaymentHistory = async (): Promise<
 };
 
 export const createBookingCheckoutSession = async (bookingId: string) => {
-  const res = await fetch("/api/checkout_sessions", {
+  const res = await fetch(`${baseUrl}/api/payments/checkout-session`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ bookingId }),

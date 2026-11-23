@@ -2,13 +2,13 @@ import { Suspense } from "react";
 import MyServicesSection from "@/app/components/technician/my-services/MyServicesSection";
 import MyServicesSkeleton from "@/app/components/technician/my-services/MyServicesSkeleton";
 import getCategories from "@/lib/api/getCategories";
-import { getSession } from "@/lib/core/server";
+import { requireDashboardRole } from "@/lib/core/server";
 import { getAllServices } from "@/lib/api/services";
 import type { Category } from "@/types/category";
 
 const MyServicesContent = async () => {
-  const [session, allServices, categoryResponse] = await Promise.all([
-    getSession(),
+  // The API scopes `includePending=true` requests to the signed-in technician.
+  const [services, categoryResponse] = await Promise.all([
     getAllServices({ includePending: true }),
     getCategories(),
   ]);
@@ -17,15 +17,13 @@ const MyServicesContent = async () => {
     : Array.isArray(categoryResponse?.data)
       ? categoryResponse.data
       : [];
-  const technicianId = session?.user.id;
-  const services = technicianId
-    ? allServices.filter((service) => service.technicianId === technicianId)
-    : [];
 
   return <MyServicesSection services={services} categories={categories} />;
 };
 
-const MyServicesPage = () => {
+const MyServicesPage = async () => {
+  await requireDashboardRole("technician");
+
   return (
     <Suspense fallback={<MyServicesSkeleton />}>
       <MyServicesContent />

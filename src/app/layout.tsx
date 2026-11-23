@@ -8,8 +8,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "FixMate",
-  description: "Smart Device & Home Appliance Repair Service Platform",
+  title: "FixMate | Smart Device & Home Appliance Repair Service Platform",
+  description:
+    "FixMate is built to eliminate the stress of equipment breakdowns. We seamlessly connect homeowners and gadget users with vetted, certified technicians for fast, honest, and reliable doorstep repairs. With transparent pricing, genuine replacement parts, and zero upfront payments, we make repairs effortless from start to finish.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

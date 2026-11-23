@@ -46,5 +46,6 @@ export const getPostAuthDestination = (
   if (role === "technician") return "/dashboard/technician";
   if (role === "admin") return "/dashboard/admin";
   const safeRedirect = getSafeRedirect(redirect);
+  if (safeRedirect === "/dashboard") return "/dashboard/customer";
   return safeRedirect.startsWith("/dashboard/") ? "/" : safeRedirect;
 };

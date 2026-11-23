@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { baseUrl } from "@/lib/utils";
 import type { ApprovalStatusFilter, Service } from "@/types/services";
 import AdminServicesDesktopTable from "./AdminServicesDesktopTable";
 import AdminServicesMobileCards from "./AdminServicesMobileCards";
@@ -26,7 +27,7 @@ const AdminServicesView = () => {
     setError("");
     try {
       const response = await fetch(
-        `/api/admin/services?status=${encodeURIComponent(status)}`,
+        `${baseUrl}/api/admin/services?status=${encodeURIComponent(status)}`,
         { cache: "no-store" },
       );
       const result = await response.json();
@@ -42,7 +43,7 @@ const AdminServicesView = () => {
   React.useEffect(() => {
     let isCurrent = true;
     fetch(
-      `/api/admin/services?status=${encodeURIComponent(status)}`,
+      `${baseUrl}/api/admin/services?status=${encodeURIComponent(status)}`,
       { cache: "no-store" },
     )
       .then(async (response) => {

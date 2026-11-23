@@ -1,9 +1,9 @@
-import { InsertedService, Service } from "@/types/services";
+import { InsertedService, Service, ServiceInput } from "@/types/services";
 import { baseUrl } from "../utils";
 
 // Add New Service
 export const addNewService = async (
-  service: Service,
+  service: ServiceInput,
 ): Promise<InsertedService> => {
   if (!baseUrl) {
     throw new Error("BASE_URL is not configured");
@@ -95,16 +95,6 @@ export const deleteService = async (
 };
 
 // Toggle Service Availability (Active / Not-Active)
-export const toggleServiceAvailability = async (
-  id: string,
-  newAvailability: "Active" | "Not-Active",
-): Promise<{ success: boolean; message: string }> => {
-  return updateService(id, {
-    availability: newAvailability,
-    isActive: newAvailability === "Active",
-  });
-};
-
 export const toggleServiceStatus = async (
   id: string,
 ): Promise<{ isActive: boolean; message: string }> => {

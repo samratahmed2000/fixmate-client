@@ -1,8 +1,11 @@
 import { Suspense } from "react";
 import AddServiceFormSkeleton from "@/app/components/technician/add-service/AddServiceFormSkeleton";
 import AddServiceSection from "@/app/components/technician/add-service/AddServiceSection";
+import { requireDashboardRole } from "@/lib/core/server";
 
-const AddServicePage = () => {
+const AddServicePage = async () => {
+  await requireDashboardRole("technician");
+
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6">
       <header className="space-y-1.5">

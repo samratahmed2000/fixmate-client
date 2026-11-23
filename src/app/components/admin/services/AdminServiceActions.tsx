@@ -5,6 +5,7 @@ import { CheckIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { notifyDashboardDataUpdated } from "@/lib/dashboard/refresh";
+import { baseUrl } from "@/lib/utils";
 import type { Service } from "@/types/services";
 
 const AdminServiceActions = ({
@@ -20,7 +21,7 @@ const AdminServiceActions = ({
     if (!service._id) return;
     setIsSubmitting(true);
     try {
-      const response = await fetch("/api/admin/services", {
+      const response = await fetch(`${baseUrl}/api/admin/services`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

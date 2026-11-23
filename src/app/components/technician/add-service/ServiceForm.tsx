@@ -24,7 +24,6 @@ const ServiceForm = ({
   mode = "add",
   initialData,
   serviceId,
-  technicianId: propTechnicianId,
   technicianName: propTechnicianName,
   technicianEmail: propTechnicianEmail,
   submitButtonText,
@@ -34,9 +33,7 @@ const ServiceForm = ({
   const router = useRouter();
   const { data: session } = useSession();
 
-  // Prefer session info, fallback to props or initialData
-  const technicianId =
-    session?.user?.id || propTechnicianId || initialData?.technicianId || "";
+  // Display-only technician info; the server sets the actual owner from the JWT.
   const technicianName =
     session?.user?.name ||
     propTechnicianName ||
@@ -81,9 +78,6 @@ const ServiceForm = ({
           serviceId: serviceId || initialData?._id,
           values,
           existingImageUrl: initialData?.serviceImage || values.existingImage,
-          technicianName,
-          technicianEmail,
-          technicianId,
           setErrors,
           setIsSubmitting,
           router,

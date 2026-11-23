@@ -1,149 +1,75 @@
-import { ObjectId } from "mongodb";
-import { mongoClient } from "@/lib/auth";
-import type { Role } from "@/types/dashboard";
-import { DashboardHistoryEntry } from "@/types/dashboard-overview";
+import "server-only";
+import { baseUrl } from "@/lib/utils";
+import { serverApiFetch } from "@/lib/api/server-fetch";
+import type { DashboardHistoryEntry } from "@/types/dashboard-overview";
 
-const toIsoString = (value: unknown) => {
-  if (!value) return null;
-  const date = value instanceof Date ? value : new Date(String(value));
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
-};
+type DashboardStat = { title: string; value: number };
+type ApiResult = Record<string, unknown>;
 
-export const getDashboardOverview = async (role: Role, userId: string) => {
-  await mongoClient.connect();
-  const database = mongoClient.db("fixMate");
+const isRecord = (value: unknown): value is ApiResult =>
+  typeof value === "object" && value !== null;
 
-  if (role === "customer") {
-    const bookings = database.collection("bookings");
-    const [totalRequests, activeJobs, completedJobs] = await Promise.all([
-      bookings.countDocuments({ customerId: userId }),
-      bookings.countDocuments({
-        customerId: userId,
-        status: { $regex: "^(in-progress|on-progress)$", $options: "i" },
-      }),
-      bookings.countDocuments({
-        customerId: userId,
-        status: { $regex: "^completed$", $options: "i" },
-      }),
-    ]);
-
-    return [
-      { title: "Total Requests", value: totalRequests },
-      { title: "Active Jobs", value: activeJobs },
-      { title: "Completed Jobs", value: completedJobs },
-    ];
+const getApiData = async (path: string): Promise<unknown> => {
+  if (!baseUrl) {
+    throw new Error("NEXT_PUBLIC_API_URL is not configured");
   }
 
-  if (role === "technician") {
-    const services = database.collection("services");
-    const [totalServices, approvedServices, pendingServices] =
-      await Promise.all([
-        services.countDocuments({ technicianId: userId }),
-        services.countDocuments({
-          technicianId: userId,
-          approvalStatus: { $regex: "^approved$", $options: "i" },
-        }),
-        services.countDocuments({
-          technicianId: userId,
-          approvalStatus: { $regex: "^pending$", $options: "i" },
-        }),
-      ]);
-
-    return [
-      { title: "Total Services", value: totalServices },
-      { title: "Approved Services", value: approvedServices },
-      { title: "Pending Services", value: pendingServices },
-    ];
+  const response = await serverApiFetch(`${baseUrl}/api/dashboard/${path}`, {
+    cache: "no-store",
+  });
+  let result: unknown;
+  try {
+    result = await response.json();
+  } catch {
+    throw new Error("The server returned an invalid dashboard response");
   }
 
-  const users = database.collection("user");
-  const services = database.collection("services");
-  const [totalUsers, totalTechnicians, pendingServices] = await Promise.all([
-    users.countDocuments({ role: { $ne: "admin" } }),
-    users.countDocuments({ role: "technician" }),
-    services.countDocuments({
-      approvalStatus: { $regex: "^pending$", $options: "i" },
-    }),
-  ]);
-
-  return [
-    { title: "Total Users", value: totalUsers },
-    { title: "Total Technicians", value: totalTechnicians },
-    { title: "Pending Services", value: pendingServices },
-  ];
-};
-
-export const getDashboardHistory = async (
-  role: Role,
-  userId: string,
-): Promise<DashboardHistoryEntry[]> => {
-  await mongoClient.connect();
-  const database = mongoClient.db("fixMate");
-
-  if (role === "customer") {
-    const bookings = await database
-      .collection("bookings")
-      .find({ customerId: userId })
-      .sort({ createdAt: -1, _id: -1 })
-      .limit(6)
-      .toArray();
-    const serviceCollection = database.collection("services");
-
-    return Promise.all(
-      bookings.map(async (booking) => {
-        const serviceId = booking.serviceId?.toString();
-        const service =
-          serviceId && ObjectId.isValid(serviceId)
-            ? await serviceCollection.findOne(
-                { _id: new ObjectId(serviceId) },
-                { projection: { title: 1 } },
-              )
-            : null;
-
-        return {
-          id: booking._id.toString(),
-          title: service?.title || "Repair request",
-          detail: "Repair booking",
-          status: String(booking.status || "requested"),
-          createdAt: toIsoString(booking.createdAt),
-        };
-      }),
+  if (!response.ok) {
+    throw new Error(
+      isRecord(result) && typeof result.message === "string"
+        ? result.message
+        : "Failed to fetch dashboard data",
     );
   }
-
-  if (role === "technician") {
-    const services = await database
-      .collection("services")
-      .find({ technicianId: userId })
-      .sort({ createdAt: -1, _id: -1 })
-      .limit(6)
-      .toArray();
-
-    return services.map((service) => ({
-      id: service._id.toString(),
-      title: String(service.title || "Untitled service"),
-      detail: [service.category, service.serviceArea]
-        .filter((value) => typeof value === "string" && value)
-        .join(" · "),
-      status: String(service.approvalStatus || "Pending"),
-      createdAt: toIsoString(service.createdAt),
-    }));
+  if (!isRecord(result) || !("data" in result)) {
+    throw new Error("The server returned invalid dashboard data");
   }
+  return result.data;
+};
 
-  const services = await database
-    .collection("services")
-    .find({})
-    .sort({ createdAt: -1, _id: -1 })
-    .limit(6)
-    .toArray();
+export const getDashboardOverview = async (): Promise<DashboardStat[]> => {
+  const data = await getApiData("overview");
+  if (
+    !Array.isArray(data) ||
+    !data.every(
+      (item) =>
+        isRecord(item) &&
+        typeof item.title === "string" &&
+        typeof item.value === "number",
+    )
+  ) {
+    throw new Error("The server returned invalid dashboard overview data");
+  }
+  return data as DashboardStat[];
+};
 
-  return services.map((service) => ({
-    id: service._id.toString(),
-    title: String(service.title || "Untitled service"),
-    detail: [service.technicianName, service.category]
-      .filter((value) => typeof value === "string" && value)
-      .join(" · "),
-    status: String(service.approvalStatus || "Pending"),
-    createdAt: toIsoString(service.createdAt),
-  }));
+export const getDashboardHistory = async (): Promise<
+  DashboardHistoryEntry[]
+> => {
+  const data = await getApiData("history");
+  if (
+    !Array.isArray(data) ||
+    !data.every(
+      (item) =>
+        isRecord(item) &&
+        typeof item.id === "string" &&
+        typeof item.title === "string" &&
+        typeof item.detail === "string" &&
+        typeof item.status === "string" &&
+        (item.createdAt === null || typeof item.createdAt === "string"),
+    )
+  ) {
+    throw new Error("The server returned invalid dashboard history data");
+  }
+  return data as DashboardHistoryEntry[];
 };

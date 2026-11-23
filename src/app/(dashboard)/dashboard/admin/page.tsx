@@ -7,10 +7,10 @@ import {
 } from "@/lib/dashboard/overview";
 
 const AdminDashboardPage = async () => {
-  const user = await requireDashboardRole("admin");
+  await requireDashboardRole("admin");
   const [counts, history] = await Promise.all([
-    getDashboardOverview("admin", user.id),
-    getDashboardHistory("admin", user.id),
+    getDashboardOverview(),
+    getDashboardHistory(),
   ]);
   const icons = [UsersIcon, WrenchIcon, Clock3Icon];
 
